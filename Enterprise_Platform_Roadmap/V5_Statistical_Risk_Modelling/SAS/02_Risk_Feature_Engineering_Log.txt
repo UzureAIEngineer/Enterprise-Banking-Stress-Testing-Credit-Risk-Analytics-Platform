@@ -1,0 +1,853 @@
+NOTE: PROCEDURE PRINTTO used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              282.87k
+      OS Memory           19104.00k
+      Timestamp           11/06/2026 01:16:43 PM
+      Step Count                        24  Switch Count  0
+2                                                          The SAS System                      Friday, November  6, 2026 06:46:43 PM
+
+      Page Faults                       0
+      Page Reclaims                     22
+      Page Swaps                        0
+      Voluntary Context Switches        10
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+110        
+111        /*************************************************************************/
+112        /* PDF EVIDENCE                                                          */
+113        /*************************************************************************/
+114        
+115        ods pdf
+116        file="&PROJECT_ROOT./OUTPUT/&MODULE_NAME._Results.pdf"
+SYMBOLGEN:  Macro variable PROJECT_ROOT resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling
+SYMBOLGEN:  Macro variable MODULE_NAME resolves to 02_Risk_Feature_Engineering
+117        style=pearl;
+NOTE: Writing ODS PDF output to DISK destination 
+      "/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/02_Risk_Feature_Engineering_Results.pdf", 
+      printer "PDF".
+118        
+119        /*************************************************************************/
+120        /* HTML EVIDENCE                                                         */
+121        /*************************************************************************/
+122        
+123        ods html5
+124        file="&PROJECT_ROOT./OUTPUT/&MODULE_NAME._Results.html"
+SYMBOLGEN:  Macro variable PROJECT_ROOT resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling
+SYMBOLGEN:  Macro variable MODULE_NAME resolves to 02_Risk_Feature_Engineering
+125        style=htmlblue;
+NOTE: Writing HTML5 Body file: 
+      /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/02_Risk_Feature_Engineering_Results.html
+126        
+127        /*************************************************************************/
+128        /* EXECUTION START                                                       */
+129        /*************************************************************************/
+130        
+131        %let START_DTM=%sysfunc(datetime());
+132        
+133        title1 "V5 Statistical Risk Modelling";
+134        title2 "Module 02 - Risk Feature Engineering";
+135        
+136        data _null_;
+137        
+138            START_TIME=&START_DTM.;
+SYMBOLGEN:  Macro variable START_DTM resolves to 2109610003.18134
+139        
+140            put "====================================================";
+141            put "MODULE : 02_Risk_Feature_Engineering";
+142            put "STATUS : STARTED";
+143            put "====================================================";
+144            put "Execution Start Time = " START_TIME datetime20.;
+145            put "====================================================";
+146        
+147        run;
+
+3                                                          The SAS System                      Friday, November  6, 2026 06:46:43 PM
+
+====================================================
+MODULE : 02_Risk_Feature_Engineering
+STATUS : STARTED
+====================================================
+Execution Start Time =   06NOV2026:18:46:43
+====================================================
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              346.71k
+      OS Memory           27804.00k
+      Timestamp           11/06/2026 01:16:43 PM
+      Step Count                        25  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     61
+      Page Swaps                        0
+      Voluntary Context Switches        0
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           8
+      
+
+148        
+149        /*************************************************************************/
+150        /* CREATE ENRICHED PORTFOLIO                                             */
+151        /*************************************************************************/
+152        
+153        data V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED;
+154        
+155            set V5DATA.ENTERPRISE_PORTFOLIO_200K;
+156        
+157            length
+158                CREDIT_SCORE_BAND $20
+159                EXPOSURE_BAND $20
+160                LTV_BAND $20
+161                DTI_BAND $20
+162                PD_BAND $20
+163                LGD_BAND $20
+164                RISK_GRADE $5;
+165        
+166            /*********************************************************************/
+167            /* CREDIT SCORE BAND                                                 */
+168            /*********************************************************************/
+169        
+170            if CREDIT_SCORE < 600 then
+171                CREDIT_SCORE_BAND='Poor';
+172        
+173            else if CREDIT_SCORE < 650 then
+174                CREDIT_SCORE_BAND='Fair';
+175        
+176            else if CREDIT_SCORE < 700 then
+177                CREDIT_SCORE_BAND='Good';
+178        
+179            else if CREDIT_SCORE < 750 then
+180                CREDIT_SCORE_BAND='Very Good';
+181        
+182            else
+4                                                          The SAS System                      Friday, November  6, 2026 06:46:43 PM
+
+183                CREDIT_SCORE_BAND='Excellent';
+184        
+185            /*********************************************************************/
+186            /* EXPOSURE BAND                                                     */
+187            /*********************************************************************/
+188        
+189            if LOAN_AMOUNT < 1000000 then
+190                EXPOSURE_BAND='Low';
+191        
+192            else if LOAN_AMOUNT < 3000000 then
+193                EXPOSURE_BAND='Medium';
+194        
+195            else if LOAN_AMOUNT < 7000000 then
+196                EXPOSURE_BAND='High';
+197        
+198            else
+199                EXPOSURE_BAND='Very High';
+200        
+201            /*********************************************************************/
+202            /* LTV BAND                                                          */
+203            /*********************************************************************/
+204        
+205            if LTV < 60 then
+206                LTV_BAND='Low LTV';
+207        
+208            else if LTV < 80 then
+209                LTV_BAND='Moderate LTV';
+210        
+211            else if LTV < 90 then
+212                LTV_BAND='Elevated LTV';
+213        
+214            else
+215                LTV_BAND='High LTV';
+216        
+217            /*********************************************************************/
+218            /* DTI BAND                                                          */
+219            /*********************************************************************/
+220        
+221            if DTI < 20 then
+222                DTI_BAND='Low DTI';
+223        
+224            else if DTI < 35 then
+225                DTI_BAND='Moderate DTI';
+226        
+227            else if DTI < 50 then
+228                DTI_BAND='High DTI';
+229        
+230            else
+231                DTI_BAND='Very High DTI';
+232        
+233            /*********************************************************************/
+234            /* PD BAND                                                           */
+235            /*********************************************************************/
+236        
+237            if PD < 0.05 then
+238                PD_BAND='Low PD';
+239        
+240            else if PD < 0.10 then
+5                                                          The SAS System                      Friday, November  6, 2026 06:46:43 PM
+
+241                PD_BAND='Medium PD';
+242        
+243            else if PD < 0.15 then
+244                PD_BAND='High PD';
+245        
+246            else
+247                PD_BAND='Very High PD';
+248        
+249            /*********************************************************************/
+250            /* LGD BAND                                                          */
+251            /*********************************************************************/
+252        
+253            if LGD < 0.20 then
+254                LGD_BAND='Low LGD';
+255        
+256            else if LGD < 0.40 then
+257                LGD_BAND='Medium LGD';
+258        
+259            else
+260                LGD_BAND='High LGD';
+261        
+262            /*********************************************************************/
+263            /* COMPOSITE RISK SCORE                                              */
+264            /*********************************************************************/
+265        
+266            /*
+267            Weighting Strategy
+268        
+269            PD   = 40%
+270            LGD  = 30%
+271            DTI  = 20%
+272            LTV  = 10%
+273        
+274            Higher Score = Higher Risk
+275            */
+276        
+277            RISK_SCORE =
+278                  (PD  * 100 * 0.40)
+279                + (LGD * 100 * 0.30)
+280                + (DTI * 0.20)
+281                + (LTV * 0.10);
+282        
+283            RISK_SCORE =
+284                round(RISK_SCORE,0.01);
+285        
+286            /*********************************************************************/
+287            /* RISK GRADE                                                       */
+288            /*********************************************************************/
+289        
+290            if RISK_SCORE < 20 then
+291                RISK_GRADE='A';
+292        
+293            else if RISK_SCORE < 35 then
+294                RISK_GRADE='B';
+295        
+296            else if RISK_SCORE < 50 then
+297                RISK_GRADE='C';
+298        
+6                                                          The SAS System                      Friday, November  6, 2026 06:46:43 PM
+
+299            else if RISK_SCORE < 65 then
+300                RISK_GRADE='D';
+301        
+302            else
+303                RISK_GRADE='E';
+304        
+305        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.ENTERPRISE_PORTFOLIO_200K.
+NOTE: The data set V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED has 200000 observations and 32 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.29 seconds
+      user cpu time       0.05 seconds
+      system cpu time     0.09 seconds
+      memory              3532.31k
+      OS Memory           32420.00k
+      Timestamp           11/06/2026 01:16:43 PM
+      Step Count                        26  Switch Count  1
+      Page Faults                       0
+      Page Reclaims                     782
+      Page Swaps                        0
+      Voluntary Context Switches        2241
+      Involuntary Context Switches      19
+      Block Input Operations            0
+      Block Output Operations           159760
+      
+
+306        
+307        /*************************************************************************/
+308        /* VALIDATION 01 - DATASET STRUCTURE                                    */
+309        /*************************************************************************/
+310        
+311        title "Dataset Structure";
+312        
+313        proc contents
+314            data=V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED;
+315        run;
+
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.09 seconds
+      user cpu time       0.08 seconds
+      system cpu time     0.01 seconds
+      memory              5604.62k
+      OS Memory           34468.00k
+      Timestamp           11/06/2026 01:16:43 PM
+      Step Count                        27  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     1275
+      Page Swaps                        0
+      Voluntary Context Switches        13
+      Involuntary Context Switches      4
+      Block Input Operations            0
+      Block Output Operations           48
+      
+
+316        
+317        /*************************************************************************/
+318        /* VALIDATION 02 - RECORD COUNT                                         */
+7                                                          The SAS System                      Friday, November  6, 2026 06:46:43 PM
+
+319        /*************************************************************************/
+320        
+321        title "Record Count Validation";
+322        
+323        proc sql;
+324        
+325        select
+326            count(*) as RECORD_COUNT
+327        from
+328            V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED;
+329        
+330        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              6811.90k
+      OS Memory           39332.00k
+      Timestamp           11/06/2026 01:16:43 PM
+      Step Count                        28  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     283
+      Page Swaps                        0
+      Voluntary Context Switches        8
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           8
+      
+
+331        
+332        /*************************************************************************/
+333        /* VALIDATION 03 - RISK GRADE DISTRIBUTION                              */
+334        /*************************************************************************/
+335        
+336        title "Risk Grade Distribution";
+337        
+338        proc freq
+339            data=V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED;
+340        
+341        tables
+342            RISK_GRADE;
+343        
+344        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.11 seconds
+      user cpu time       0.05 seconds
+      system cpu time     0.02 seconds
+      memory              2237.56k
+      OS Memory           34468.00k
+      Timestamp           11/06/2026 01:16:43 PM
+      Step Count                        29  Switch Count  14
+      Page Faults                       0
+      Page Reclaims                     378
+      Page Swaps                        0
+      Voluntary Context Switches        713
+      Involuntary Context Switches      10
+8                                                          The SAS System                      Friday, November  6, 2026 06:46:43 PM
+
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+345        
+346        /*************************************************************************/
+347        /* VALIDATION 04 - CREDIT SCORE BAND                                    */
+348        /*************************************************************************/
+349        
+350        title "Credit Score Band Distribution";
+351        
+352        proc freq
+353            data=V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED;
+354        
+355        tables
+356            CREDIT_SCORE_BAND;
+357        
+358        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.05 seconds
+      user cpu time       0.03 seconds
+      system cpu time     0.02 seconds
+      memory              2167.46k
+      OS Memory           34468.00k
+      Timestamp           11/06/2026 01:16:43 PM
+      Step Count                        30  Switch Count  14
+      Page Faults                       0
+      Page Reclaims                     322
+      Page Swaps                        0
+      Voluntary Context Switches        49
+      Involuntary Context Switches      3
+      Block Input Operations            0
+      Block Output Operations           272
+      
+
+359        
+360        /*************************************************************************/
+361        /* VALIDATION 05 - RISK SCORE ANALYSIS                                  */
+362        /*************************************************************************/
+363        
+364        title "Risk Score Distribution";
+365        
+366        proc means
+367            data=V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED
+368            n
+369            mean
+370            min
+371            p25
+372            median
+373            p75
+374            max
+375            maxdec=2;
+376        
+377        var
+378            RISK_SCORE;
+379        
+9                                                          The SAS System                      Friday, November  6, 2026 06:46:43 PM
+
+380        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.05 seconds
+      user cpu time       0.06 seconds
+      system cpu time     0.02 seconds
+      memory              9063.32k
+      OS Memory           41676.00k
+      Timestamp           11/06/2026 01:16:43 PM
+      Step Count                        31  Switch Count  13
+      Page Faults                       0
+      Page Reclaims                     2155
+      Page Swaps                        0
+      Voluntary Context Switches        87
+      Involuntary Context Switches      2
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+381        
+382        /*************************************************************************/
+383        /* VALIDATION 06 - CORE RISK METRICS                                    */
+384        /*************************************************************************/
+385        
+386        title "PD LGD DTI LTV Statistics";
+387        
+388        proc means
+389            data=V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED
+390            n
+391            mean
+392            min
+393            max
+394            maxdec=4;
+395        
+396        var
+397            PD
+398            LGD
+399            LTV
+400            DTI
+401            LOAN_AMOUNT
+402            RISK_SCORE;
+403        
+404        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.06 seconds
+      user cpu time       0.06 seconds
+      system cpu time     0.02 seconds
+      memory              7792.75k
+      OS Memory           40884.00k
+      Timestamp           11/06/2026 01:16:43 PM
+      Step Count                        32  Switch Count  13
+      Page Faults                       0
+      Page Reclaims                     1738
+      Page Swaps                        0
+      Voluntary Context Switches        130
+10                                                         The SAS System                      Friday, November  6, 2026 06:46:43 PM
+
+      Involuntary Context Switches      4
+      Block Input Operations            0
+      Block Output Operations           32
+      
+
+405        
+406        /*************************************************************************/
+407        /* EXPORT CSV                                                           */
+408        /*************************************************************************/
+409        
+410        proc export
+411            data=V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED
+412            outfile=
+413        "&PROJECT_ROOT./DATA/enterprise_portfolio_enriched.csv"
+SYMBOLGEN:  Macro variable PROJECT_ROOT resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling
+414            dbms=csv
+415            replace;
+416        run;
+
+NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to 
+WORK.PARMS.PARMS.SLIST.
+417         /**********************************************************************
+418         *   PRODUCT:   SAS
+419         *   VERSION:   9.4
+420         *   CREATOR:   External File Interface
+421         *   DATE:      06NOV26
+422         *   DESC:      Generated SAS Datastep Code
+423         *   TEMPLATE SOURCE:  (None Specified.)
+424         ***********************************************************************/
+425            data _null_;
+426            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+427            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+428            file '/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/enterprise_portfolio_enriched.csv'
+428      ! delimiter=',' DSD DROPOVER lrecl=32767;
+429            if _n_ = 1 then        /* write column names or labels */
+430             do;
+431               put
+432                  "CUSTOMER_ID"
+433               ','
+434                  "LOAN_ID"
+435               ','
+436                  "PORTFOLIO_TYPE"
+437               ','
+438                  "PRODUCT_TYPE"
+439               ','
+440                  "REGION"
+441               ','
+442                  "DELINQUENCY_BUCKET"
+443               ','
+444                  "RECORD_ID"
+445               ','
+446                  "PRODUCT_RANDOM"
+447               ','
+448                  "REGION_RANDOM"
+449               ','
+450                  "CREDIT_SCORE"
+451               ','
+452                  "ANNUAL_INCOME"
+11                                                         The SAS System                      Friday, November  6, 2026 06:46:43 PM
+
+453               ','
+454                  "LOAN_AMOUNT"
+455               ','
+456                  "OUTSTANDING_BALANCE"
+457               ','
+458                  "LTV"
+459               ','
+460                  "DTI"
+461               ','
+462                  "YEARS_ON_BOOK"
+463               ','
+464                  "RANDOM_DPD"
+465               ','
+466                  "GDP_GROWTH_RATE"
+467               ','
+468                  "UNEMPLOYMENT_RATE"
+469               ','
+470                  "INTEREST_RATE"
+471               ','
+472                  "PD"
+473               ','
+474                  "LGD"
+475               ','
+476                  "EAD"
+477               ','
+478                  "OBSERVED_DEFAULT"
+479               ','
+480                  "CREDIT_SCORE_BAND"
+481               ','
+482                  "EXPOSURE_BAND"
+483               ','
+484                  "LTV_BAND"
+485               ','
+486                  "DTI_BAND"
+487               ','
+488                  "PD_BAND"
+489               ','
+490                  "LGD_BAND"
+491               ','
+492                  "RISK_GRADE"
+493               ','
+494                  "RISK_SCORE"
+495               ;
+496             end;
+497           set  V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED   end=EFIEOD;
+498               format CUSTOMER_ID $20. ;
+499               format LOAN_ID $20. ;
+500               format PORTFOLIO_TYPE $15. ;
+501               format PRODUCT_TYPE $30. ;
+502               format REGION $20. ;
+503               format DELINQUENCY_BUCKET $20. ;
+504               format RECORD_ID best12. ;
+505               format PRODUCT_RANDOM best12. ;
+506               format REGION_RANDOM best12. ;
+507               format CREDIT_SCORE best12. ;
+508               format ANNUAL_INCOME best12. ;
+509               format LOAN_AMOUNT best12. ;
+510               format OUTSTANDING_BALANCE best12. ;
+12                                                         The SAS System                      Friday, November  6, 2026 06:46:43 PM
+
+511               format LTV best12. ;
+512               format DTI best12. ;
+513               format YEARS_ON_BOOK best12. ;
+514               format RANDOM_DPD best12. ;
+515               format GDP_GROWTH_RATE best12. ;
+516               format UNEMPLOYMENT_RATE best12. ;
+517               format INTEREST_RATE best12. ;
+518               format PD best12. ;
+519               format LGD best12. ;
+520               format EAD best12. ;
+521               format OBSERVED_DEFAULT best12. ;
+522               format CREDIT_SCORE_BAND $20. ;
+523               format EXPOSURE_BAND $20. ;
+524               format LTV_BAND $20. ;
+525               format DTI_BAND $20. ;
+526               format PD_BAND $20. ;
+527               format LGD_BAND $20. ;
+528               format RISK_GRADE $5. ;
+529               format RISK_SCORE best12. ;
+530             do;
+531               EFIOUT + 1;
+532               put CUSTOMER_ID $ @;
+533               put LOAN_ID $ @;
+534               put PORTFOLIO_TYPE $ @;
+535               put PRODUCT_TYPE $ @;
+536               put REGION $ @;
+537               put DELINQUENCY_BUCKET $ @;
+538               put RECORD_ID @;
+539               put PRODUCT_RANDOM @;
+540               put REGION_RANDOM @;
+541               put CREDIT_SCORE @;
+542               put ANNUAL_INCOME @;
+543               put LOAN_AMOUNT @;
+544               put OUTSTANDING_BALANCE @;
+545               put LTV @;
+546               put DTI @;
+547               put YEARS_ON_BOOK @;
+548               put RANDOM_DPD @;
+549               put GDP_GROWTH_RATE @;
+550               put UNEMPLOYMENT_RATE @;
+551               put INTEREST_RATE @;
+552               put PD @;
+553               put LGD @;
+554               put EAD @;
+555               put OBSERVED_DEFAULT @;
+556               put CREDIT_SCORE_BAND $ @;
+557               put EXPOSURE_BAND $ @;
+558               put LTV_BAND $ @;
+559               put DTI_BAND $ @;
+560               put PD_BAND $ @;
+561               put LGD_BAND $ @;
+562               put RISK_GRADE $ @;
+563               put RISK_SCORE ;
+564               ;
+565             end;
+566            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+567            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+568            run;
+13                                                         The SAS System                      Friday, November  6, 2026 06:46:43 PM
+
+
+NOTE: The file '/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/enterprise_portfolio_enriched.csv' is:
+      Filename=/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/enterprise_portfolio_enriched.csv,
+      Owner Name=umeshzure,Group Name=oda,
+      Access Permission=-rw-r--r--,
+      Last Modified=06Nov2026:18:46:43
+
+NOTE: 200001 records were written to the file 
+      '/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/enterprise_portfolio_enriched.csv'.
+      The minimum record length was 185.
+      The maximum record length was 369.
+NOTE: There were 200000 observations read from the data set V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED.
+NOTE: DATA statement used (Total process time):
+      real time           1.14 seconds
+      user cpu time       1.03 seconds
+      system cpu time     0.03 seconds
+      memory              13566.59k
+      OS Memory           46876.00k
+      Timestamp           11/06/2026 01:16:45 PM
+      Step Count                        33  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     352
+      Page Swaps                        0
+      Voluntary Context Switches        1280
+      Involuntary Context Switches      3
+      Block Input Operations            0
+      Block Output Operations           84216
+      
+
+200000 records created in 
+/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/enterprise_portfolio_enriched.csv from 
+V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED.
+  
+  
+NOTE: "/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/enterprise_portfolio_enriched.csv" file was 
+      successfully created.
+NOTE: PROCEDURE EXPORT used (Total process time):
+      real time           1.19 seconds
+      user cpu time       1.06 seconds
+      system cpu time     0.05 seconds
+      memory              13566.59k
+      OS Memory           47136.00k
+      Timestamp           11/06/2026 01:16:45 PM
+      Step Count                        33  Switch Count  8
+      Page Faults                       5
+      Page Reclaims                     3104
+      Page Swaps                        0
+      Voluntary Context Switches        1377
+      Involuntary Context Switches      5
+      Block Input Operations            904
+      Block Output Operations           84336
+      
+
+569        
+570        /*************************************************************************/
+571        /* EXECUTION END                                                        */
+572        /*************************************************************************/
+573        
+14                                                         The SAS System                      Friday, November  6, 2026 06:46:45 PM
+
+574        %let END_DTM=%sysfunc(datetime());
+575        
+576        /*************************************************************************/
+577        /* EXECUTION AUDIT                                                      */
+578        /*************************************************************************/
+579        
+580        data V5DATA.V5_EXECUTION_AUDIT;
+581        
+582            length
+583                MODULE_NAME $100
+584                STATUS $20;
+585        
+586            MODULE_NAME="&MODULE_NAME.";
+SYMBOLGEN:  Macro variable MODULE_NAME resolves to 02_Risk_Feature_Engineering
+587            STATUS="SUCCESS";
+588        
+589            START_TIME=&START_DTM.;
+SYMBOLGEN:  Macro variable START_DTM resolves to 2109610003.18134
+590            END_TIME=&END_DTM.;
+SYMBOLGEN:  Macro variable END_DTM resolves to 2109610005.06444
+591        
+592            DURATION_SEC=
+593                round(
+594                    END_TIME-START_TIME,
+595                    0.01
+596                );
+597        
+598            format
+599                START_TIME datetime20.
+600                END_TIME datetime20.;
+601        
+602        run;
+
+NOTE: The data set V5DATA.V5_EXECUTION_AUDIT has 1 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              525.37k
+      OS Memory           39080.00k
+      Timestamp           11/06/2026 01:16:45 PM
+      Step Count                        34  Switch Count  1
+      Page Faults                       0
+      Page Reclaims                     94
+      Page Swaps                        0
+      Voluntary Context Switches        41
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+603        
+604        /*************************************************************************/
+605        /* EXECUTION SUMMARY                                                    */
+606        /*************************************************************************/
+607        
+608        data _null_;
+609        
+15                                                         The SAS System                      Friday, November  6, 2026 06:46:45 PM
+
+610            START_TIME=&START_DTM.;
+SYMBOLGEN:  Macro variable START_DTM resolves to 2109610003.18134
+611            END_TIME=&END_DTM.;
+SYMBOLGEN:  Macro variable END_DTM resolves to 2109610005.06444
+612        
+613            DURATION=
+614                round(
+615                    END_TIME-START_TIME,
+616                    0.01
+617                );
+618        
+619            put "====================================================";
+620            put "MODULE COMPLETED SUCCESSFULLY";
+621            put "====================================================";
+SYMBOLGEN:  Macro variable MODULE_NAME resolves to 02_Risk_Feature_Engineering
+622            put "Module Name      = &MODULE_NAME.";
+623            put "Start Time       = " START_TIME datetime20.;
+624            put "End Time         = " END_TIME datetime20.;
+625            put "Duration Seconds = " DURATION;
+626            put "====================================================";
+627        
+628        run;
+
+====================================================
+MODULE COMPLETED SUCCESSFULLY
+====================================================
+Module Name      = 02_Risk_Feature_Engineering
+Start Time       =   06NOV2026:18:46:43
+End Time         =   06NOV2026:18:46:45
+Duration Seconds = 1.88
+====================================================
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              348.81k
+      OS Memory           38820.00k
+      Timestamp           11/06/2026 01:16:45 PM
+      Step Count                        35  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     24
+      Page Swaps                        0
+      Voluntary Context Switches        0
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           8
+      
+
+629        
+630        /*************************************************************************/
+631        /* CLOSE OUTPUTS                                                        */
+632        /*************************************************************************/
+633        
+634        ods html5 close;
+635        ods pdf close;
+NOTE: ODS PDF printed 7 pages to 
+      /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/02_Risk_Feature_Engineering_Results.pdf.
+636        
+16                                                         The SAS System                      Friday, November  6, 2026 06:46:45 PM
+
+637        proc printto;
+638        run;
+
