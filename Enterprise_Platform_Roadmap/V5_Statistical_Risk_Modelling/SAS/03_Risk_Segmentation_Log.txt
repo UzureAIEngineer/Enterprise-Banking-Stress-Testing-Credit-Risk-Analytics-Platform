@@ -1,0 +1,737 @@
+NOTE: PROCEDURE PRINTTO used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              280.00k
+2                                                          The SAS System                      Friday, November  6, 2026 07:42:08 PM
+
+      OS Memory           28072.00k
+      Timestamp           11/06/2026 02:12:08 PM
+      Step Count                        42  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     16
+      Page Swaps                        0
+      Voluntary Context Switches        10
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+110        
+111        /*************************************************************************/
+112        /* PDF OUTPUT                                                            */
+113        /*************************************************************************/
+114        
+115        ods pdf
+116        file="&PROJECT_ROOT./OUTPUT/&MODULE_NAME._Results.pdf"
+SYMBOLGEN:  Macro variable PROJECT_ROOT resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling
+SYMBOLGEN:  Macro variable MODULE_NAME resolves to 03_Risk_Segmentation
+117        style=pearl;
+NOTE: Writing ODS PDF output to DISK destination 
+      "/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/03_Risk_Segmentation_Results.pdf", printer "PDF".
+118        
+119        /*************************************************************************/
+120        /* HTML OUTPUT                                                           */
+121        /*************************************************************************/
+122        
+123        ods html5
+124        file="&PROJECT_ROOT./OUTPUT/&MODULE_NAME._Results.html"
+SYMBOLGEN:  Macro variable PROJECT_ROOT resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling
+SYMBOLGEN:  Macro variable MODULE_NAME resolves to 03_Risk_Segmentation
+125        style=htmlblue;
+NOTE: Writing HTML5 Body file: 
+      /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/03_Risk_Segmentation_Results.html
+126        
+127        /*************************************************************************/
+128        /* EXECUTION START                                                       */
+129        /*************************************************************************/
+130        
+131        %let START_DTM=%sysfunc(datetime());
+132        
+133        title1 "V5 Statistical Risk Modelling";
+134        title2 "Module 03 - Risk Segmentation";
+135        
+136        /*************************************************************************/
+137        /* CREATE RISK SEGMENTS                                                  */
+138        /*************************************************************************/
+139        
+140        data V5DATA.RISK_SEGMENTATION;
+141        
+142            set V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED;
+143        
+144            length
+145                RISK_SEGMENT $20
+146                SEGMENT_DESCRIPTION $50;
+147        
+3                                                          The SAS System                      Friday, November  6, 2026 07:42:08 PM
+
+148            if RISK_SCORE < 20 then do;
+149        
+150                RISK_SEGMENT='LOW RISK';
+151                SEGMENT_RANK=1;
+152                SEGMENT_DESCRIPTION='Strong Credit Quality';
+153        
+154            end;
+155        
+156            else if RISK_SCORE < 35 then do;
+157        
+158                RISK_SEGMENT='MODERATE RISK';
+159                SEGMENT_RANK=2;
+160                SEGMENT_DESCRIPTION='Acceptable Risk';
+161        
+162            end;
+163        
+164            else if RISK_SCORE < 50 then do;
+165        
+166                RISK_SEGMENT='HIGH RISK';
+167                SEGMENT_RANK=3;
+168                SEGMENT_DESCRIPTION='Elevated Risk';
+169        
+170            end;
+171        
+172            else do;
+173        
+174                RISK_SEGMENT='VERY HIGH RISK';
+175                SEGMENT_RANK=4;
+176                SEGMENT_DESCRIPTION='Watchlist Portfolio';
+177        
+178            end;
+179        
+180        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.ENTERPRISE_PORTFOLIO_ENRICHED.
+NOTE: The data set V5DATA.RISK_SEGMENTATION has 200000 observations and 35 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.24 seconds
+      user cpu time       0.02 seconds
+      system cpu time     0.08 seconds
+      memory              3486.90k
+      OS Memory           38060.00k
+      Timestamp           11/06/2026 02:12:09 PM
+      Step Count                        43  Switch Count  1
+      Page Faults                       0
+      Page Reclaims                     583
+      Page Swaps                        0
+      Voluntary Context Switches        3018
+      Involuntary Context Switches      2
+      Block Input Operations            0
+      Block Output Operations           188424
+      
+
+181        
+182        /*************************************************************************/
+183        /* VALIDATION 01                                                        */
+184        /*************************************************************************/
+185        
+4                                                          The SAS System                      Friday, November  6, 2026 07:42:09 PM
+
+186        title "Dataset Structure";
+187        
+188        proc contents
+189        data=V5DATA.RISK_SEGMENTATION;
+190        run;
+
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.10 seconds
+      user cpu time       0.09 seconds
+      system cpu time     0.01 seconds
+      memory              5278.84k
+      OS Memory           37804.00k
+      Timestamp           11/06/2026 02:12:09 PM
+      Step Count                        44  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     627
+      Page Swaps                        0
+      Voluntary Context Switches        14
+      Involuntary Context Switches      1
+      Block Input Operations            0
+      Block Output Operations           48
+      
+
+191        
+192        /*************************************************************************/
+193        /* VALIDATION 02                                                        */
+194        /*************************************************************************/
+195        
+196        title "Record Count Validation";
+197        
+198        proc sql;
+199        
+200        select
+201            count(*) as TOTAL_RECORDS
+202        from
+203            V5DATA.RISK_SEGMENTATION;
+204        
+205        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              6813.93k
+      OS Memory           42668.00k
+      Timestamp           11/06/2026 02:12:09 PM
+      Step Count                        45  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     292
+      Page Swaps                        0
+      Voluntary Context Switches        8
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           8
+      
+
+206        
+207        /*************************************************************************/
+208        /* VALIDATION 03                                                        */
+5                                                          The SAS System                      Friday, November  6, 2026 07:42:09 PM
+
+209        /*************************************************************************/
+210        
+211        title "Risk Segment Distribution";
+212        
+213        proc freq
+214        data=V5DATA.RISK_SEGMENTATION;
+215        
+216        tables
+217        RISK_SEGMENT;
+218        
+219        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.RISK_SEGMENTATION.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.11 seconds
+      user cpu time       0.04 seconds
+      system cpu time     0.03 seconds
+      memory              2197.90k
+      OS Memory           37804.00k
+      Timestamp           11/06/2026 02:12:09 PM
+      Step Count                        46  Switch Count  16
+      Page Faults                       0
+      Page Reclaims                     322
+      Page Swaps                        0
+      Voluntary Context Switches        1059
+      Involuntary Context Switches      6
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+220        
+221        /*************************************************************************/
+222        /* VALIDATION 04                                                        */
+223        /*************************************************************************/
+224        
+225        title "Risk Grade By Segment";
+226        
+227        proc freq
+228        data=V5DATA.RISK_SEGMENTATION;
+229        
+230        tables
+231        RISK_SEGMENT * RISK_GRADE
+232        /nocol norow nopercent;
+233        
+234        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.RISK_SEGMENTATION.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.07 seconds
+      user cpu time       0.05 seconds
+      system cpu time     0.03 seconds
+      memory              2910.15k
+      OS Memory           38576.00k
+      Timestamp           11/06/2026 02:12:09 PM
+      Step Count                        47  Switch Count  18
+      Page Faults                       0
+      Page Reclaims                     495
+      Page Swaps                        0
+6                                                          The SAS System                      Friday, November  6, 2026 07:42:09 PM
+
+      Voluntary Context Switches        68
+      Involuntary Context Switches      2
+      Block Input Operations            0
+      Block Output Operations           536
+      
+
+235        
+236        /*************************************************************************/
+237        /* VALIDATION 05                                                        */
+238        /*************************************************************************/
+239        
+240        title "Segment Risk Statistics";
+241        
+242        proc means
+243        data=V5DATA.RISK_SEGMENTATION
+244        n
+245        mean
+246        min
+247        median
+248        max
+249        maxdec=2;
+250        
+251        class
+252        RISK_SEGMENT;
+253        
+254        var
+255        RISK_SCORE
+256        PD
+257        LGD
+258        EAD;
+259        
+260        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.RISK_SEGMENTATION.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.24 seconds
+      user cpu time       0.28 seconds
+      system cpu time     0.02 seconds
+      memory              14485.70k
+      OS Memory           51204.00k
+      Timestamp           11/06/2026 02:12:09 PM
+      Step Count                        48  Switch Count  15
+      Page Faults                       0
+      Page Reclaims                     3523
+      Page Swaps                        0
+      Voluntary Context Switches        235
+      Involuntary Context Switches      4
+      Block Input Operations            0
+      Block Output Operations           32
+      
+
+261        
+262        /*************************************************************************/
+263        /* VALIDATION 06                                                        */
+264        /*************************************************************************/
+265        
+266        title "Top 20 Highest Risk Accounts";
+267        
+7                                                          The SAS System                      Friday, November  6, 2026 07:42:09 PM
+
+268        proc sort
+269        data=V5DATA.RISK_SEGMENTATION
+270        out=WORK.HIGHEST_RISK;
+271        
+272        by descending RISK_SCORE;
+273        
+274        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.RISK_SEGMENTATION.
+NOTE: The data set WORK.HIGHEST_RISK has 200000 observations and 35 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.23 seconds
+      user cpu time       0.14 seconds
+      system cpu time     0.09 seconds
+      memory              102837.15k
+      OS Memory           141200.00k
+      Timestamp           11/06/2026 02:12:09 PM
+      Step Count                        49  Switch Count  16
+      Page Faults                       0
+      Page Reclaims                     25082
+      Page Swaps                        0
+      Voluntary Context Switches        56
+      Involuntary Context Switches      5
+      Block Input Operations            0
+      Block Output Operations           188432
+      
+
+275        
+276        proc print
+277        data=WORK.HIGHEST_RISK(obs=20);
+278        
+279        var
+280        
+281        CUSTOMER_ID
+282        LOAN_ID
+283        PORTFOLIO_TYPE
+284        PRODUCT_TYPE
+285        RISK_SCORE
+286        RISK_GRADE
+287        PD
+288        LGD
+289        EAD;
+290        
+291        run;
+
+NOTE: There were 20 observations read from the data set WORK.HIGHEST_RISK.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.06 seconds
+      user cpu time       0.07 seconds
+      system cpu time     0.00 seconds
+      memory              2121.96k
+      OS Memory           40872.00k
+      Timestamp           11/06/2026 02:12:09 PM
+      Step Count                        50  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     284
+      Page Swaps                        0
+      Voluntary Context Switches        0
+8                                                          The SAS System                      Friday, November  6, 2026 07:42:09 PM
+
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           32
+      
+
+292        
+293        /*************************************************************************/
+294        /* EXPORT CSV                                                           */
+295        /*************************************************************************/
+296        
+297        proc export
+298        data=V5DATA.RISK_SEGMENTATION
+299        outfile=
+300        "&PROJECT_ROOT./DATA/risk_segmentation.csv"
+SYMBOLGEN:  Macro variable PROJECT_ROOT resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling
+301        dbms=csv
+302        replace;
+303        run;
+
+NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to 
+WORK.PARMS.PARMS.SLIST.
+304         /**********************************************************************
+305         *   PRODUCT:   SAS
+306         *   VERSION:   9.4
+307         *   CREATOR:   External File Interface
+308         *   DATE:      06NOV26
+309         *   DESC:      Generated SAS Datastep Code
+310         *   TEMPLATE SOURCE:  (None Specified.)
+311         ***********************************************************************/
+312            data _null_;
+313            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+314            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+315            file '/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/risk_segmentation.csv' delimiter=','
+315      ! DSD DROPOVER lrecl=32767;
+316            if _n_ = 1 then        /* write column names or labels */
+317             do;
+318               put
+319                  "CUSTOMER_ID"
+320               ','
+321                  "LOAN_ID"
+322               ','
+323                  "PORTFOLIO_TYPE"
+324               ','
+325                  "PRODUCT_TYPE"
+326               ','
+327                  "REGION"
+328               ','
+329                  "DELINQUENCY_BUCKET"
+330               ','
+331                  "RECORD_ID"
+332               ','
+333                  "PRODUCT_RANDOM"
+334               ','
+335                  "REGION_RANDOM"
+336               ','
+337                  "CREDIT_SCORE"
+338               ','
+339                  "ANNUAL_INCOME"
+9                                                          The SAS System                      Friday, November  6, 2026 07:42:09 PM
+
+340               ','
+341                  "LOAN_AMOUNT"
+342               ','
+343                  "OUTSTANDING_BALANCE"
+344               ','
+345                  "LTV"
+346               ','
+347                  "DTI"
+348               ','
+349                  "YEARS_ON_BOOK"
+350               ','
+351                  "RANDOM_DPD"
+352               ','
+353                  "GDP_GROWTH_RATE"
+354               ','
+355                  "UNEMPLOYMENT_RATE"
+356               ','
+357                  "INTEREST_RATE"
+358               ','
+359                  "PD"
+360               ','
+361                  "LGD"
+362               ','
+363                  "EAD"
+364               ','
+365                  "OBSERVED_DEFAULT"
+366               ','
+367                  "CREDIT_SCORE_BAND"
+368               ','
+369                  "EXPOSURE_BAND"
+370               ','
+371                  "LTV_BAND"
+372               ','
+373                  "DTI_BAND"
+374               ','
+375                  "PD_BAND"
+376               ','
+377                  "LGD_BAND"
+378               ','
+379                  "RISK_GRADE"
+380               ','
+381                  "RISK_SCORE"
+382               ','
+383                  "RISK_SEGMENT"
+384               ','
+385                  "SEGMENT_DESCRIPTION"
+386               ','
+387                  "SEGMENT_RANK"
+388               ;
+389             end;
+390           set  V5DATA.RISK_SEGMENTATION   end=EFIEOD;
+391               format CUSTOMER_ID $20. ;
+392               format LOAN_ID $20. ;
+393               format PORTFOLIO_TYPE $15. ;
+394               format PRODUCT_TYPE $30. ;
+395               format REGION $20. ;
+396               format DELINQUENCY_BUCKET $20. ;
+397               format RECORD_ID best12. ;
+10                                                         The SAS System                      Friday, November  6, 2026 07:42:09 PM
+
+398               format PRODUCT_RANDOM best12. ;
+399               format REGION_RANDOM best12. ;
+400               format CREDIT_SCORE best12. ;
+401               format ANNUAL_INCOME best12. ;
+402               format LOAN_AMOUNT best12. ;
+403               format OUTSTANDING_BALANCE best12. ;
+404               format LTV best12. ;
+405               format DTI best12. ;
+406               format YEARS_ON_BOOK best12. ;
+407               format RANDOM_DPD best12. ;
+408               format GDP_GROWTH_RATE best12. ;
+409               format UNEMPLOYMENT_RATE best12. ;
+410               format INTEREST_RATE best12. ;
+411               format PD best12. ;
+412               format LGD best12. ;
+413               format EAD best12. ;
+414               format OBSERVED_DEFAULT best12. ;
+415               format CREDIT_SCORE_BAND $20. ;
+416               format EXPOSURE_BAND $20. ;
+417               format LTV_BAND $20. ;
+418               format DTI_BAND $20. ;
+419               format PD_BAND $20. ;
+420               format LGD_BAND $20. ;
+421               format RISK_GRADE $5. ;
+422               format RISK_SCORE best12. ;
+423               format RISK_SEGMENT $20. ;
+424               format SEGMENT_DESCRIPTION $50. ;
+425               format SEGMENT_RANK best12. ;
+426             do;
+427               EFIOUT + 1;
+428               put CUSTOMER_ID $ @;
+429               put LOAN_ID $ @;
+430               put PORTFOLIO_TYPE $ @;
+431               put PRODUCT_TYPE $ @;
+432               put REGION $ @;
+433               put DELINQUENCY_BUCKET $ @;
+434               put RECORD_ID @;
+435               put PRODUCT_RANDOM @;
+436               put REGION_RANDOM @;
+437               put CREDIT_SCORE @;
+438               put ANNUAL_INCOME @;
+439               put LOAN_AMOUNT @;
+440               put OUTSTANDING_BALANCE @;
+441               put LTV @;
+442               put DTI @;
+443               put YEARS_ON_BOOK @;
+444               put RANDOM_DPD @;
+445               put GDP_GROWTH_RATE @;
+446               put UNEMPLOYMENT_RATE @;
+447               put INTEREST_RATE @;
+448               put PD @;
+449               put LGD @;
+450               put EAD @;
+451               put OBSERVED_DEFAULT @;
+452               put CREDIT_SCORE_BAND $ @;
+453               put EXPOSURE_BAND $ @;
+454               put LTV_BAND $ @;
+455               put DTI_BAND $ @;
+11                                                         The SAS System                      Friday, November  6, 2026 07:42:09 PM
+
+456               put PD_BAND $ @;
+457               put LGD_BAND $ @;
+458               put RISK_GRADE $ @;
+459               put RISK_SCORE @;
+460               put RISK_SEGMENT $ @;
+461               put SEGMENT_DESCRIPTION $ @;
+462               put SEGMENT_RANK ;
+463               ;
+464             end;
+465            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+466            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+467            run;
+
+NOTE: The file '/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/risk_segmentation.csv' is:
+      Filename=/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/risk_segmentation.csv,
+      Owner Name=umeshzure,Group Name=oda,
+      Access Permission=-rw-r--r--,
+      Last Modified=06Nov2026:19:42:09
+
+NOTE: 200001 records were written to the file 
+      '/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/risk_segmentation.csv'.
+      The minimum record length was 215.
+      The maximum record length was 415.
+NOTE: There were 200000 observations read from the data set V5DATA.RISK_SEGMENTATION.
+NOTE: DATA statement used (Total process time):
+      real time           1.28 seconds
+      user cpu time       1.15 seconds
+      system cpu time     0.03 seconds
+      memory              12242.37k
+      OS Memory           48412.00k
+      Timestamp           11/06/2026 02:12:11 PM
+      Step Count                        51  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     320
+      Page Swaps                        0
+      Voluntary Context Switches        1436
+      Involuntary Context Switches      11
+      Block Input Operations            0
+      Block Output Operations           96336
+      
+
+200000 records created in /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/risk_segmentation.csv from 
+V5DATA.RISK_SEGMENTATION.
+  
+  
+NOTE: "/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/risk_segmentation.csv" file was successfully 
+      created.
+NOTE: PROCEDURE EXPORT used (Total process time):
+      real time           1.31 seconds
+      user cpu time       1.17 seconds
+      system cpu time     0.05 seconds
+      memory              12242.37k
+      OS Memory           48672.00k
+      Timestamp           11/06/2026 02:12:11 PM
+      Step Count                        51  Switch Count  8
+      Page Faults                       0
+      Page Reclaims                     1870
+      Page Swaps                        0
+12                                                         The SAS System                      Friday, November  6, 2026 07:42:11 PM
+
+      Voluntary Context Switches        1497
+      Involuntary Context Switches      12
+      Block Input Operations            0
+      Block Output Operations           96408
+      
+
+468        
+469        /*************************************************************************/
+470        /* EXECUTION END                                                        */
+471        /*************************************************************************/
+472        
+473        %let END_DTM=%sysfunc(datetime());
+474        
+475        /*************************************************************************/
+476        /* EXECUTION AUDIT                                                      */
+477        /*************************************************************************/
+478        
+479        data V5DATA.V5_EXECUTION_AUDIT;
+480        
+481        length
+482            MODULE_NAME $100
+483            STATUS $20;
+484        
+485        MODULE_NAME="&MODULE_NAME.";
+SYMBOLGEN:  Macro variable MODULE_NAME resolves to 03_Risk_Segmentation
+486        STATUS="SUCCESS";
+487        
+488        START_TIME=&START_DTM.;
+SYMBOLGEN:  Macro variable START_DTM resolves to 2109613328.79167
+489        END_TIME=&END_DTM.;
+SYMBOLGEN:  Macro variable END_DTM resolves to 2109613331.21144
+490        
+491        DURATION_SEC=
+492        round(
+493            END_TIME-START_TIME,
+494            0.01
+495        );
+496        
+497        format
+498        START_TIME datetime20.
+499        END_TIME datetime20.;
+500        
+501        run;
+
+NOTE: The data set V5DATA.V5_EXECUTION_AUDIT has 1 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              522.84k
+      OS Memory           40360.00k
+      Timestamp           11/06/2026 02:12:11 PM
+      Step Count                        52  Switch Count  1
+      Page Faults                       0
+      Page Reclaims                     87
+      Page Swaps                        0
+      Voluntary Context Switches        38
+      Involuntary Context Switches      0
+13                                                         The SAS System                      Friday, November  6, 2026 07:42:11 PM
+
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+502        
+503        /*************************************************************************/
+504        /* EXECUTION SUMMARY                                                    */
+505        /*************************************************************************/
+506        
+507        data _null_;
+508        
+509        START_TIME=&START_DTM.;
+SYMBOLGEN:  Macro variable START_DTM resolves to 2109613328.79167
+510        END_TIME=&END_DTM.;
+SYMBOLGEN:  Macro variable END_DTM resolves to 2109613331.21144
+511        
+512        DURATION=
+513        round(
+514            END_TIME-START_TIME,
+515            0.01
+516        );
+517        
+518        put "====================================================";
+519        put "MODULE COMPLETED SUCCESSFULLY";
+520        put "====================================================";
+SYMBOLGEN:  Macro variable MODULE_NAME resolves to 03_Risk_Segmentation
+521        put "Module Name      = &MODULE_NAME.";
+522        put "Duration Seconds = " DURATION;
+523        put "====================================================";
+524        
+525        run;
+
+====================================================
+MODULE COMPLETED SUCCESSFULLY
+====================================================
+Module Name      = 03_Risk_Segmentation
+Duration Seconds = 2.42
+====================================================
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              347.62k
+      OS Memory           40100.00k
+      Timestamp           11/06/2026 02:12:11 PM
+      Step Count                        53  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     23
+      Page Swaps                        0
+      Voluntary Context Switches        0
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+526        
+527        /*************************************************************************/
+528        /* CLOSE OUTPUTS                                                        */
+14                                                         The SAS System                      Friday, November  6, 2026 07:42:11 PM
+
+529        /*************************************************************************/
+530        
+531        ods html5 close;
+532        ods pdf close;
+NOTE: ODS PDF printed 7 pages to 
+      /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/03_Risk_Segmentation_Results.pdf.
+533        
+534        proc printto;
+535        run;
+
