@@ -1,8 +1,9 @@
 # V5 Statistical Risk Modelling
 
-## Status
-
-Current Progress: Module 01 Completed ✅
+Current Progress:
+✅ Module 01 Enterprise Portfolio Generator
+✅ Module 02 Risk Feature Engineering
+⏳ Module 03 Risk Segmentation
 
 ## Project Objective
 
