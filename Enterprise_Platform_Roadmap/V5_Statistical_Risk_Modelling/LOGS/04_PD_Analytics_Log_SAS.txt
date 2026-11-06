@@ -1,0 +1,664 @@
+NOTE: PROCEDURE PRINTTO used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              281.18k
+2                                                          The SAS System                      Friday, November  6, 2026 08:26:09 PM
+
+      OS Memory           30632.00k
+      Timestamp           11/06/2026 02:56:09 PM
+      Step Count                        60  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     16
+      Page Swaps                        0
+      Voluntary Context Switches        10
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+110        
+111        /*************************************************************************/
+112        /* PDF OUTPUT                                                            */
+113        /*************************************************************************/
+114        
+115        ods pdf
+116        file="&PROJECT_ROOT./OUTPUT/&MODULE_NAME._Results_SAS.pdf"
+SYMBOLGEN:  Macro variable PROJECT_ROOT resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling
+SYMBOLGEN:  Macro variable MODULE_NAME resolves to 04_PD_Analytics
+117        style=pearl;
+NOTE: Writing ODS PDF output to DISK destination 
+      "/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/04_PD_Analytics_Results_SAS.pdf", printer "PDF".
+118        
+119        /*************************************************************************/
+120        /* HTML OUTPUT                                                           */
+121        /*************************************************************************/
+122        
+123        ods html5
+124        file="&PROJECT_ROOT./OUTPUT/&MODULE_NAME._Results_SAS.html"
+SYMBOLGEN:  Macro variable PROJECT_ROOT resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling
+SYMBOLGEN:  Macro variable MODULE_NAME resolves to 04_PD_Analytics
+125        style=htmlblue;
+NOTE: Writing HTML5 Body file: 
+      /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/04_PD_Analytics_Results_SAS.html
+126        
+127        /*************************************************************************/
+128        /* EXECUTION START                                                       */
+129        /*************************************************************************/
+130        
+131        %let START_DTM=%sysfunc(datetime());
+132        
+133        title1 "V5 Statistical Risk Modelling";
+134        title2 "Module 04 - Probability of Default Analytics";
+135        
+136        /*************************************************************************/
+137        /* CREATE PD ANALYTICS TABLE                                             */
+138        /*************************************************************************/
+139        
+140        proc sql;
+141        
+142        create table V5DATA.PD_ANALYTICS_RESULTS as
+143        
+144        select
+145        
+146            RISK_SEGMENT,
+147        
+3                                                          The SAS System                      Friday, November  6, 2026 08:26:09 PM
+
+148            RISK_GRADE,
+149        
+150            PORTFOLIO_TYPE,
+151        
+152            count(*) as ACCOUNT_COUNT,
+153        
+154            mean(PD) format=8.4 as AVG_PD,
+155        
+156            min(PD) format=8.4 as MIN_PD,
+157        
+158            max(PD) format=8.4 as MAX_PD,
+159        
+160            mean(RISK_SCORE) format=8.2 as AVG_RISK_SCORE,
+161        
+162            sum(EAD) format=comma20.2 as TOTAL_EAD
+163        
+164        from
+165        
+166            V5DATA.RISK_SEGMENTATION
+167        
+168        group by
+169        
+170            RISK_SEGMENT,
+171            RISK_GRADE,
+172            PORTFOLIO_TYPE
+173        ;
+NOTE: Table V5DATA.PD_ANALYTICS_RESULTS created, with 6 rows and 9 columns.
+
+174        
+175        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.10 seconds
+      user cpu time       0.08 seconds
+      system cpu time     0.06 seconds
+      memory              28249.93k
+      OS Memory           62444.00k
+      Timestamp           11/06/2026 02:56:09 PM
+      Step Count                        61  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     6541
+      Page Swaps                        0
+      Voluntary Context Switches        1244
+      Involuntary Context Switches      14
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+176        
+177        /*************************************************************************/
+178        /* VALIDATION 01 - DATASET STRUCTURE                                     */
+179        /*************************************************************************/
+180        
+181        title "PD Analytics Dataset Structure";
+182        
+183        proc contents
+184        data=V5DATA.PD_ANALYTICS_RESULTS;
+185        run;
+
+4                                                          The SAS System                      Friday, November  6, 2026 08:26:09 PM
+
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.07 seconds
+      user cpu time       0.08 seconds
+      system cpu time     0.00 seconds
+      memory              3818.71k
+      OS Memory           37548.00k
+      Timestamp           11/06/2026 02:56:09 PM
+      Step Count                        62  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     195
+      Page Swaps                        0
+      Voluntary Context Switches        13
+      Involuntary Context Switches      2
+      Block Input Operations            0
+      Block Output Operations           16
+      
+
+186        
+187        /*************************************************************************/
+188        /* VALIDATION 02 - RECORD COUNT                                          */
+189        /*************************************************************************/
+190        
+191        title "PD Analytics Record Count";
+192        
+193        proc sql;
+194        
+195        select count(*) as TOTAL_RECORDS
+196        
+197        from V5DATA.PD_ANALYTICS_RESULTS;
+198        
+199        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              5461.31k
+      OS Memory           42412.00k
+      Timestamp           11/06/2026 02:56:09 PM
+      Step Count                        63  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     63
+      Page Swaps                        0
+      Voluntary Context Switches        8
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           8
+      
+
+200        
+201        /*************************************************************************/
+202        /* VALIDATION 03 - PD BY RISK SEGMENT                                    */
+203        /*************************************************************************/
+204        
+205        title "PD Statistics By Risk Segment";
+206        
+207        proc means
+208        data=V5DATA.RISK_SEGMENTATION
+209        n
+5                                                          The SAS System                      Friday, November  6, 2026 08:26:09 PM
+
+210        mean
+211        min
+212        median
+213        max
+214        maxdec=4;
+215        
+216        class RISK_SEGMENT;
+217        
+218        var PD;
+219        
+220        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.RISK_SEGMENTATION.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.05 seconds
+      user cpu time       0.08 seconds
+      system cpu time     0.02 seconds
+      memory              9473.25k
+      OS Memory           45760.00k
+      Timestamp           11/06/2026 02:56:09 PM
+      Step Count                        64  Switch Count  15
+      Page Faults                       0
+      Page Reclaims                     2227
+      Page Swaps                        0
+      Voluntary Context Switches        156
+      Involuntary Context Switches      3
+      Block Input Operations            0
+      Block Output Operations           32
+      
+
+221        
+222        /*************************************************************************/
+223        /* VALIDATION 04 - PD BY PORTFOLIO                                       */
+224        /*************************************************************************/
+225        
+226        title "PD By Portfolio Type";
+227        
+228        proc means
+229        data=V5DATA.RISK_SEGMENTATION
+230        n
+231        mean
+232        min
+233        max
+234        maxdec=4;
+235        
+236        class PORTFOLIO_TYPE;
+237        
+238        var PD;
+239        
+240        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.RISK_SEGMENTATION.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.04 seconds
+      user cpu time       0.04 seconds
+      system cpu time     0.02 seconds
+      memory              9521.93k
+      OS Memory           46780.00k
+6                                                          The SAS System                      Friday, November  6, 2026 08:26:09 PM
+
+      Timestamp           11/06/2026 02:56:09 PM
+      Step Count                        65  Switch Count  15
+      Page Faults                       0
+      Page Reclaims                     1896
+      Page Swaps                        0
+      Voluntary Context Switches        100
+      Involuntary Context Switches      2
+      Block Input Operations            0
+      Block Output Operations           8
+      
+
+241        
+242        /*************************************************************************/
+243        /* VALIDATION 05 - PD BY PRODUCT TYPE                                    */
+244        /*************************************************************************/
+245        
+246        title "PD By Product Type";
+247        
+248        proc means
+249        data=V5DATA.RISK_SEGMENTATION
+250        n
+251        mean
+252        min
+253        max
+254        maxdec=4;
+255        
+256        class PRODUCT_TYPE;
+257        
+258        var PD;
+259        
+260        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.RISK_SEGMENTATION.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.05 seconds
+      user cpu time       0.06 seconds
+      system cpu time     0.02 seconds
+      memory              8844.96k
+      OS Memory           45244.00k
+      Timestamp           11/06/2026 02:56:09 PM
+      Step Count                        66  Switch Count  15
+      Page Faults                       0
+      Page Reclaims                     1606
+      Page Swaps                        0
+      Voluntary Context Switches        122
+      Involuntary Context Switches      4
+      Block Input Operations            0
+      Block Output Operations           8
+      
+
+261        
+262        /*************************************************************************/
+263        /* VALIDATION 06 - PD BY REGION                                          */
+264        /*************************************************************************/
+265        
+266        title "PD By Region";
+267        
+268        proc means
+7                                                          The SAS System                      Friday, November  6, 2026 08:26:09 PM
+
+269        data=V5DATA.RISK_SEGMENTATION
+270        n
+271        mean
+272        min
+273        max
+274        maxdec=4;
+275        
+276        class REGION;
+277        
+278        var PD;
+279        
+280        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.RISK_SEGMENTATION.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.04 seconds
+      user cpu time       0.05 seconds
+      system cpu time     0.02 seconds
+      memory              9039.28k
+      OS Memory           45756.00k
+      Timestamp           11/06/2026 02:56:09 PM
+      Step Count                        67  Switch Count  15
+      Page Faults                       0
+      Page Reclaims                     1658
+      Page Swaps                        0
+      Voluntary Context Switches        112
+      Involuntary Context Switches      3
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+281        
+282        /*************************************************************************/
+283        /* VALIDATION 07 - TOP PD ACCOUNTS                                       */
+284        /*************************************************************************/
+285        
+286        proc sort
+287        data=V5DATA.RISK_SEGMENTATION
+288        out=WORK.TOP_PD_ACCOUNTS;
+289        
+290        by descending PD;
+291        
+292        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.RISK_SEGMENTATION.
+NOTE: The data set WORK.TOP_PD_ACCOUNTS has 200000 observations and 35 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.22 seconds
+      user cpu time       0.12 seconds
+      system cpu time     0.10 seconds
+      memory              102882.78k
+      OS Memory           140688.00k
+      Timestamp           11/06/2026 02:56:10 PM
+      Step Count                        68  Switch Count  16
+      Page Faults                       0
+      Page Reclaims                     25053
+      Page Swaps                        0
+      Voluntary Context Switches        52
+8                                                          The SAS System                      Friday, November  6, 2026 08:26:10 PM
+
+      Involuntary Context Switches      4
+      Block Input Operations            0
+      Block Output Operations           188440
+      
+
+293        
+294        title "Top 20 Probability of Default Accounts";
+295        
+296        proc print
+297        data=WORK.TOP_PD_ACCOUNTS(obs=20);
+298        
+299        var
+300        
+301        CUSTOMER_ID
+302        LOAN_ID
+303        PORTFOLIO_TYPE
+304        PRODUCT_TYPE
+305        RISK_SEGMENT
+306        RISK_GRADE
+307        PD
+308        LGD
+309        EAD
+310        RISK_SCORE;
+311        
+312        run;
+
+NOTE: There were 20 observations read from the data set WORK.TOP_PD_ACCOUNTS.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.07 seconds
+      user cpu time       0.07 seconds
+      system cpu time     0.00 seconds
+      memory              2240.53k
+      OS Memory           40104.00k
+      Timestamp           11/06/2026 02:56:10 PM
+      Step Count                        69  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     276
+      Page Swaps                        0
+      Voluntary Context Switches        0
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           64
+      
+
+313        
+314        /*************************************************************************/
+315        /* EXPORT CSV                                                            */
+316        /*************************************************************************/
+317        
+318        proc export
+319        data=V5DATA.PD_ANALYTICS_RESULTS
+320        outfile=
+321        "&PROJECT_ROOT./DATA/pd_analytics_results_SAS.csv"
+SYMBOLGEN:  Macro variable PROJECT_ROOT resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling
+322        dbms=csv
+323        replace;
+324        run;
+
+9                                                          The SAS System                      Friday, November  6, 2026 08:26:10 PM
+
+NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to 
+WORK.PARMS.PARMS.SLIST.
+325         /**********************************************************************
+326         *   PRODUCT:   SAS
+327         *   VERSION:   9.4
+328         *   CREATOR:   External File Interface
+329         *   DATE:      06NOV26
+330         *   DESC:      Generated SAS Datastep Code
+331         *   TEMPLATE SOURCE:  (None Specified.)
+332         ***********************************************************************/
+333            data _null_;
+334            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+335            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+336            file '/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/pd_analytics_results_SAS.csv'
+336      ! delimiter=',' DSD DROPOVER lrecl=32767;
+337            if _n_ = 1 then        /* write column names or labels */
+338             do;
+339               put
+340                  "RISK_SEGMENT"
+341               ','
+342                  "RISK_GRADE"
+343               ','
+344                  "PORTFOLIO_TYPE"
+345               ','
+346                  "ACCOUNT_COUNT"
+347               ','
+348                  "AVG_PD"
+349               ','
+350                  "MIN_PD"
+351               ','
+352                  "MAX_PD"
+353               ','
+354                  "AVG_RISK_SCORE"
+355               ','
+356                  "TOTAL_EAD"
+357               ;
+358             end;
+359           set  V5DATA.PD_ANALYTICS_RESULTS   end=EFIEOD;
+360               format RISK_SEGMENT $20. ;
+361               format RISK_GRADE $5. ;
+362               format PORTFOLIO_TYPE $15. ;
+363               format ACCOUNT_COUNT best12. ;
+364               format AVG_PD 8.4 ;
+365               format MIN_PD 8.4 ;
+366               format MAX_PD 8.4 ;
+367               format AVG_RISK_SCORE 8.2 ;
+368               format TOTAL_EAD comma20.2 ;
+369             do;
+370               EFIOUT + 1;
+371               put RISK_SEGMENT $ @;
+372               put RISK_GRADE $ @;
+373               put PORTFOLIO_TYPE $ @;
+374               put ACCOUNT_COUNT @;
+375               put AVG_PD @;
+376               put MIN_PD @;
+377               put MAX_PD @;
+378               put AVG_RISK_SCORE @;
+379               put TOTAL_EAD ;
+10                                                         The SAS System                      Friday, November  6, 2026 08:26:10 PM
+
+380               ;
+381             end;
+382            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+383            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+384            run;
+
+NOTE: The file '/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/pd_analytics_results_SAS.csv' is:
+      Filename=/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/pd_analytics_results_SAS.csv,
+      Owner Name=umeshzure,Group Name=oda,
+      Access Permission=-rw-r--r--,
+      Last Modified=06Nov2026:20:26:10
+
+NOTE: 7 records were written to the file 
+      '/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/pd_analytics_results_SAS.csv'.
+      The minimum record length was 70.
+      The maximum record length was 98.
+NOTE: There were 6 observations read from the data set V5DATA.PD_ANALYTICS_RESULTS.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              9079.65k
+      OS Memory           44572.00k
+      Timestamp           11/06/2026 02:56:10 PM
+      Step Count                        70  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     100
+      Page Swaps                        0
+      Voluntary Context Switches        12
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           16
+      
+
+6 records created in /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/pd_analytics_results_SAS.csv from 
+V5DATA.PD_ANALYTICS_RESULTS.
+  
+  
+NOTE: "/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/pd_analytics_results_SAS.csv" file was 
+      successfully created.
+NOTE: PROCEDURE EXPORT used (Total process time):
+      real time           0.03 seconds
+      user cpu time       0.02 seconds
+      system cpu time     0.01 seconds
+      memory              9079.65k
+      OS Memory           44832.00k
+      Timestamp           11/06/2026 02:56:10 PM
+      Step Count                        70  Switch Count  8
+      Page Faults                       0
+      Page Reclaims                     1115
+      Page Swaps                        0
+      Voluntary Context Switches        80
+      Involuntary Context Switches      1
+      Block Input Operations            96
+      Block Output Operations           80
+      
+
+385        
+11                                                         The SAS System                      Friday, November  6, 2026 08:26:10 PM
+
+386        /*************************************************************************/
+387        /* EXECUTION AUDIT                                                       */
+388        /*************************************************************************/
+389        
+390        %let END_DTM=%sysfunc(datetime());
+391        
+392        data V5DATA.V5_EXECUTION_AUDIT;
+393        
+394        length
+395        MODULE_NAME $100
+396        STATUS $20;
+397        
+398        MODULE_NAME="&MODULE_NAME.";
+SYMBOLGEN:  Macro variable MODULE_NAME resolves to 04_PD_Analytics
+399        STATUS="SUCCESS";
+400        
+401        START_TIME=&START_DTM.;
+SYMBOLGEN:  Macro variable START_DTM resolves to 2109615969.50611
+402        END_TIME=&END_DTM.;
+SYMBOLGEN:  Macro variable END_DTM resolves to 2109615970.26556
+403        
+404        DURATION_SEC=
+405        round(
+406        END_TIME-START_TIME,
+407        0.01
+408        );
+409        
+410        format
+411        START_TIME datetime20.
+412        END_TIME datetime20.;
+413        
+414        run;
+
+NOTE: The data set V5DATA.V5_EXECUTION_AUDIT has 1 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              529.71k
+      OS Memory           39848.00k
+      Timestamp           11/06/2026 02:56:10 PM
+      Step Count                        71  Switch Count  1
+      Page Faults                       0
+      Page Reclaims                     87
+      Page Swaps                        0
+      Voluntary Context Switches        37
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+415        
+416        /*************************************************************************/
+417        /* EXECUTION SUMMARY                                                     */
+418        /*************************************************************************/
+419        
+420        data _null_;
+421        
+12                                                         The SAS System                      Friday, November  6, 2026 08:26:10 PM
+
+422        START_TIME=&START_DTM.;
+SYMBOLGEN:  Macro variable START_DTM resolves to 2109615969.50611
+423        END_TIME=&END_DTM.;
+SYMBOLGEN:  Macro variable END_DTM resolves to 2109615970.26556
+424        
+425        DURATION=
+426        round(
+427        END_TIME-START_TIME,
+428        0.01
+429        );
+430        
+431        put "====================================================";
+432        put "MODULE COMPLETED SUCCESSFULLY";
+433        put "====================================================";
+SYMBOLGEN:  Macro variable MODULE_NAME resolves to 04_PD_Analytics
+434        put "Module Name      = &MODULE_NAME.";
+435        put "Duration Seconds = " DURATION;
+436        put "====================================================";
+437        
+438        run;
+
+====================================================
+MODULE COMPLETED SUCCESSFULLY
+====================================================
+Module Name      = 04_PD_Analytics
+Duration Seconds = 0.76
+====================================================
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              353.68k
+      OS Memory           39588.00k
+      Timestamp           11/06/2026 02:56:10 PM
+      Step Count                        72  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     23
+      Page Swaps                        0
+      Voluntary Context Switches        0
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+439        
+440        /*************************************************************************/
+441        /* CLOSE OUTPUTS                                                         */
+442        /*************************************************************************/
+443        
+444        ods html5 close;
+445        ods pdf close;
+NOTE: ODS PDF printed 9 pages to 
+      /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/04_PD_Analytics_Results_SAS.pdf.
+446        
+447        proc printto;
+448        run;
+
