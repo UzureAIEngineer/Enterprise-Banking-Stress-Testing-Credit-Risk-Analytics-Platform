@@ -1,10 +1,18 @@
 
 ## Python Deliverables
 
-| File | Purpose |
-|--------|--------|
-| 01_Enterprise_Portfolio_Generator.py | Production-ready implementation |
-| 01_Enterprise_Portfolio_Generator.ipynb | Interactive notebook version |
-| requirements.txt | Python package dependencies |
+## Python Deliverables
 
-The Python script is considered the production implementation and includes automated logging, execution auditing, validation, and output generation.
+### Production Scripts
+
+- 01_Enterprise_Portfolio_Generator.py
+- 02_Risk_Feature_Engineering.py
+- 03_Risk_Segmentation.py
+- 04_PD_Analytics.py
+
+### Notebook Demonstrations
+
+- 01_Enterprise_Portfolio_Generator.ipynb
+- 02_Risk_Feature_Engineering.ipynb
+- 03_Risk_Segmentation.ipynb
+- 04_PD_Analytics.ipynb
