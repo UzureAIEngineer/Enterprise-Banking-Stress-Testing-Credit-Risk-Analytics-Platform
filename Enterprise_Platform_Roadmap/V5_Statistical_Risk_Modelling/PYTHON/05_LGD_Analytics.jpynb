@@ -1,0 +1,159 @@
+# Module 05 - Loss Given Default (LGD) Analytics
+
+## Project
+Enterprise Banking Stress Testing & Credit Risk Analytics Platform
+
+## Version
+V5 Statistical Risk Modelling
+
+## Module Objective
+
+Analyze Loss Given Default (LGD) across:
+
+- Risk Segments
+- Risk Grades
+- Portfolio Types
+- Product Types
+- Regions
+
+This module forms the second pillar of the IFRS9 framework:
+
+ECL = PD × LGD × EAD
+
+##############################################################################
+# Environment Setup
+##############################################################################
+
+import pandas as pd
+import numpy as np
+
+pd.set_option("display.max_columns", None)
+
+print("Module 05 - LGD Analytics")
+print("Environment Ready")
+
+
+## Input Dataset
+
+Source:
+
+risk_segmentation.csv
+
+Generated From:
+
+Module 03 - Risk Segmentation
+
+Contains:
+
+- Risk Segment
+- Risk Grade
+- Risk Score
+- PD
+- LGD
+- EAD
+
+from pathlib import Path
+
+PROJECT_ROOT = Path.cwd().parents[0]
+
+DATA_FILE = PROJECT_ROOT / "DATA" / "risk_segmentation.csv"
+
+df = pd.read_csv(DATA_FILE)
+
+print("Rows :", len(df))
+print("Columns :", len(df.columns))
+
+df.head()
+
+## LGD Analytics Summary
+
+lgd_results = (
+
+    df.groupby(
+        [
+            "RISK_SEGMENT",
+            "RISK_GRADE",
+            "PORTFOLIO_TYPE"
+        ]
+    )
+
+    .agg(
+        ACCOUNT_COUNT=("LGD", "count"),
+        AVG_LGD=("LGD", "mean"),
+        MIN_LGD=("LGD", "min"),
+        MAX_LGD=("LGD", "max"),
+        AVG_RISK_SCORE=("RISK_SCORE", "mean"),
+        TOTAL_EAD=("EAD", "sum")
+    )
+
+    .reset_index()
+
+)
+
+lgd_results
+
+
+## LGD by Risk Segment
+
+df.groupby(
+    "RISK_SEGMENT"
+)["LGD"].describe()
+
+## LGD by Portfolio Type
+
+df.groupby(
+    "PORTFOLIO_TYPE"
+)["LGD"].describe()
+
+## LGD by Product Type
+
+df.groupby(
+    "PRODUCT_TYPE"
+)["LGD"].describe()
+
+## LGD by Region
+
+df.groupby(
+    "REGION"
+)["LGD"].describe()
+
+## Top 20 LGD Accounts
+
+top_lgd_accounts = (
+
+    df.sort_values(
+        by="LGD",
+        ascending=False
+    )
+
+    .head(20)
+
+)
+
+top_lgd_accounts[
+    [
+        "CUSTOMER_ID",
+        "LOAN_ID",
+        "PORTFOLIO_TYPE",
+        "PRODUCT_TYPE",
+        "RISK_SEGMENT",
+        "RISK_GRADE",
+        "LGD",
+        "PD",
+        "EAD",
+        "RISK_SCORE"
+    ]
+]
+# Key Findings
+
+Document observations from LGD analytics:
+
+- Highest LGD segments
+- Portfolio concentration
+- Product-level LGD characteristics
+- Regional LGD patterns
+- High-loss accounts
+
+These findings will feed into:
+
+Module 06 - Expected Credit Loss (ECL) Forecasting
