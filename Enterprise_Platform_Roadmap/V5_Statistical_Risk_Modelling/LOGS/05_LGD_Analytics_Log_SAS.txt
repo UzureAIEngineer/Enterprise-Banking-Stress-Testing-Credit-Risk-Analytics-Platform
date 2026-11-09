@@ -1,0 +1,645 @@
+NOTE: PROCEDURE PRINTTO used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              283.71k
+      OS Memory           19104.00k
+      Timestamp           11/06/2026 06:40:41 PM
+      Step Count                        24  Switch Count  0
+2                                                          The SAS System                    Saturday, November  7, 2026 12:10:41 AM
+
+      Page Faults                       0
+      Page Reclaims                     24
+      Page Swaps                        0
+      Voluntary Context Switches        12
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+110        
+111        /*************************************************************************/
+112        /* PDF OUTPUT                                                            */
+113        /*************************************************************************/
+114        
+115        ods pdf
+116        file="&PROJECT_ROOT./OUTPUT/&MODULE_NAME._Results_SAS.pdf"
+SYMBOLGEN:  Macro variable PROJECT_ROOT resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling
+SYMBOLGEN:  Macro variable MODULE_NAME resolves to 05_LGD_Analytics
+117        style=pearl;
+NOTE: Writing ODS PDF output to DISK destination 
+      "/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/05_LGD_Analytics_Results_SAS.pdf", printer "PDF".
+118        
+119        /*************************************************************************/
+120        /* HTML OUTPUT                                                           */
+121        /*************************************************************************/
+122        
+123        ods html5
+124        file="&PROJECT_ROOT./OUTPUT/&MODULE_NAME._Results_SAS.html"
+SYMBOLGEN:  Macro variable PROJECT_ROOT resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling
+SYMBOLGEN:  Macro variable MODULE_NAME resolves to 05_LGD_Analytics
+125        style=htmlblue;
+NOTE: Writing HTML5 Body file: 
+      /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/05_LGD_Analytics_Results_SAS.html
+126        
+127        /*************************************************************************/
+128        /* EXECUTION START                                                       */
+129        /*************************************************************************/
+130        
+131        %let START_DTM=%sysfunc(datetime());
+132        
+133        title1 "V5 Statistical Risk Modelling";
+134        title2 "Module 05 - Loss Given Default Analytics";
+135        
+136        /*************************************************************************/
+137        /* CREATE LGD ANALYTICS TABLE                                            */
+138        /*************************************************************************/
+139        
+140        proc sql;
+141        
+142        create table V5DATA.LGD_ANALYTICS_RESULTS as
+143        
+144        select
+145        
+146            RISK_SEGMENT,
+147            RISK_GRADE,
+148            PORTFOLIO_TYPE,
+149        
+150            count(*) as ACCOUNT_COUNT,
+3                                                          The SAS System                    Saturday, November  7, 2026 12:10:41 AM
+
+151        
+152            mean(LGD) format=8.4 as AVG_LGD,
+153        
+154            min(LGD) format=8.4 as MIN_LGD,
+155        
+156            max(LGD) format=8.4 as MAX_LGD,
+157        
+158            mean(RISK_SCORE) format=8.2 as AVG_RISK_SCORE,
+159        
+160            sum(EAD) format=comma20.2 as TOTAL_EAD
+161        
+162        from
+163        
+164            V5DATA.RISK_SEGMENTATION
+165        
+166        group by
+167        
+168            RISK_SEGMENT,
+169            RISK_GRADE,
+170            PORTFOLIO_TYPE
+171        ;
+NOTE: Table V5DATA.LGD_ANALYTICS_RESULTS created, with 6 rows and 9 columns.
+
+172        
+173        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.14 seconds
+      user cpu time       0.09 seconds
+      system cpu time     0.04 seconds
+      memory              28261.79k
+      OS Memory           56548.00k
+      Timestamp           11/06/2026 06:40:41 PM
+      Step Count                        25  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     3716
+      Page Swaps                        0
+      Voluntary Context Switches        1293
+      Involuntary Context Switches      12
+      Block Input Operations            0
+      Block Output Operations           272
+      
+
+174        
+175        /*************************************************************************/
+176        /* VALIDATION 01                                                         */
+177        /*************************************************************************/
+178        
+179        title "LGD Analytics Dataset Structure";
+180        
+181        proc contents
+182        data=V5DATA.LGD_ANALYTICS_RESULTS;
+183        run;
+
+NOTE: PROCEDURE CONTENTS used (Total process time):
+      real time           0.08 seconds
+      user cpu time       0.08 seconds
+      system cpu time     0.01 seconds
+      memory              4153.78k
+4                                                          The SAS System                    Saturday, November  7, 2026 12:10:41 AM
+
+      OS Memory           32932.00k
+      Timestamp           11/06/2026 06:40:41 PM
+      Step Count                        26  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     921
+      Page Swaps                        0
+      Voluntary Context Switches        14
+      Involuntary Context Switches      2
+      Block Input Operations            0
+      Block Output Operations           16
+      
+
+184        
+185        /*************************************************************************/
+186        /* VALIDATION 02                                                         */
+187        /*************************************************************************/
+188        
+189        title "LGD Analytics Record Count";
+190        
+191        proc sql;
+192        
+193        select
+194            count(*) as TOTAL_RECORDS
+195        from
+196            V5DATA.LGD_ANALYTICS_RESULTS;
+197        
+198        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              5461.09k
+      OS Memory           37796.00k
+      Timestamp           11/06/2026 06:40:41 PM
+      Step Count                        27  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     106
+      Page Swaps                        0
+      Voluntary Context Switches        8
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           8
+      
+
+199        
+200        /*************************************************************************/
+201        /* VALIDATION 03                                                         */
+202        /*************************************************************************/
+203        
+204        title "LGD Statistics By Risk Segment";
+205        
+206        proc means
+207        data=V5DATA.RISK_SEGMENTATION
+208        n mean min median max maxdec=4;
+209        
+210        class RISK_SEGMENT;
+211        
+212        var LGD;
+5                                                          The SAS System                    Saturday, November  7, 2026 12:10:41 AM
+
+213        
+214        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.RISK_SEGMENTATION.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.06 seconds
+      user cpu time       0.09 seconds
+      system cpu time     0.02 seconds
+      memory              9828.87k
+      OS Memory           42176.00k
+      Timestamp           11/06/2026 06:40:41 PM
+      Step Count                        28  Switch Count  15
+      Page Faults                       0
+      Page Reclaims                     2394
+      Page Swaps                        0
+      Voluntary Context Switches        163
+      Involuntary Context Switches      3
+      Block Input Operations            0
+      Block Output Operations           40
+      
+
+215        
+216        /*************************************************************************/
+217        /* VALIDATION 04                                                         */
+218        /*************************************************************************/
+219        
+220        title "LGD By Portfolio Type";
+221        
+222        proc means
+223        data=V5DATA.RISK_SEGMENTATION
+224        n mean min max maxdec=4;
+225        
+226        class PORTFOLIO_TYPE;
+227        
+228        var LGD;
+229        
+230        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.RISK_SEGMENTATION.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.05 seconds
+      user cpu time       0.05 seconds
+      system cpu time     0.03 seconds
+      memory              9516.46k
+      OS Memory           42932.00k
+      Timestamp           11/06/2026 06:40:41 PM
+      Step Count                        29  Switch Count  15
+      Page Faults                       0
+      Page Reclaims                     1905
+      Page Swaps                        0
+      Voluntary Context Switches        98
+      Involuntary Context Switches      3
+      Block Input Operations            0
+      Block Output Operations           8
+      
+
+231        
+232        /*************************************************************************/
+6                                                          The SAS System                    Saturday, November  7, 2026 12:10:41 AM
+
+233        /* VALIDATION 05                                                         */
+234        /*************************************************************************/
+235        
+236        title "LGD By Product Type";
+237        
+238        proc means
+239        data=V5DATA.RISK_SEGMENTATION
+240        n mean min max maxdec=4;
+241        
+242        class PRODUCT_TYPE;
+243        
+244        var LGD;
+245        
+246        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.RISK_SEGMENTATION.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.05 seconds
+      user cpu time       0.06 seconds
+      system cpu time     0.02 seconds
+      memory              8830.90k
+      OS Memory           41396.00k
+      Timestamp           11/06/2026 06:40:41 PM
+      Step Count                        30  Switch Count  15
+      Page Faults                       0
+      Page Reclaims                     1624
+      Page Swaps                        0
+      Voluntary Context Switches        122
+      Involuntary Context Switches      4
+      Block Input Operations            0
+      Block Output Operations           8
+      
+
+247        
+248        /*************************************************************************/
+249        /* VALIDATION 06                                                         */
+250        /*************************************************************************/
+251        
+252        title "LGD By Region";
+253        
+254        proc means
+255        data=V5DATA.RISK_SEGMENTATION
+256        n mean min max maxdec=4;
+257        
+258        class REGION;
+259        
+260        var LGD;
+261        
+262        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.RISK_SEGMENTATION.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.05 seconds
+      user cpu time       0.06 seconds
+      system cpu time     0.02 seconds
+      memory              9039.93k
+      OS Memory           41908.00k
+      Timestamp           11/06/2026 06:40:41 PM
+7                                                          The SAS System                    Saturday, November  7, 2026 12:10:41 AM
+
+      Step Count                        31  Switch Count  15
+      Page Faults                       0
+      Page Reclaims                     1659
+      Page Swaps                        0
+      Voluntary Context Switches        110
+      Involuntary Context Switches      3
+      Block Input Operations            0
+      Block Output Operations           8
+      
+
+263        
+264        /*************************************************************************/
+265        /* VALIDATION 07                                                         */
+266        /*************************************************************************/
+267        
+268        proc sort
+269        data=V5DATA.RISK_SEGMENTATION
+270        out=WORK.TOP_LGD_ACCOUNTS;
+271        
+272        by descending LGD;
+273        
+274        run;
+
+NOTE: There were 200000 observations read from the data set V5DATA.RISK_SEGMENTATION.
+NOTE: The data set WORK.TOP_LGD_ACCOUNTS has 200000 observations and 35 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.23 seconds
+      user cpu time       0.13 seconds
+      system cpu time     0.10 seconds
+      memory              102836.40k
+      OS Memory           137352.00k
+      Timestamp           11/06/2026 06:40:42 PM
+      Step Count                        32  Switch Count  16
+      Page Faults                       0
+      Page Reclaims                     25225
+      Page Swaps                        0
+      Voluntary Context Switches        54
+      Involuntary Context Switches      6
+      Block Input Operations            0
+      Block Output Operations           188432
+      
+
+275        
+276        title "Top 20 LGD Accounts";
+277        
+278        proc print
+279        data=WORK.TOP_LGD_ACCOUNTS(obs=20);
+280        
+281        var
+282        CUSTOMER_ID
+283        LOAN_ID
+284        PORTFOLIO_TYPE
+285        PRODUCT_TYPE
+286        RISK_SEGMENT
+287        RISK_GRADE
+288        LGD
+289        PD
+290        EAD
+8                                                          The SAS System                    Saturday, November  7, 2026 12:10:42 AM
+
+291        RISK_SCORE;
+292        
+293        run;
+
+NOTE: There were 20 observations read from the data set WORK.TOP_LGD_ACCOUNTS.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.08 seconds
+      user cpu time       0.08 seconds
+      system cpu time     0.00 seconds
+      memory              2205.84k
+      OS Memory           37280.00k
+      Timestamp           11/06/2026 06:40:42 PM
+      Step Count                        33  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     279
+      Page Swaps                        0
+      Voluntary Context Switches        0
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           64
+      
+
+294        
+295        /*************************************************************************/
+296        /* EXPORT CSV                                                            */
+297        /*************************************************************************/
+298        
+299        proc export
+300        data=V5DATA.LGD_ANALYTICS_RESULTS
+301        outfile=
+302        "&PROJECT_ROOT./DATA/lgd_analytics_results_SAS.csv"
+SYMBOLGEN:  Macro variable PROJECT_ROOT resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling
+303        dbms=csv
+304        replace;
+305        run;
+
+NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to 
+WORK.PARMS.PARMS.SLIST.
+306         /**********************************************************************
+307         *   PRODUCT:   SAS
+308         *   VERSION:   9.4
+309         *   CREATOR:   External File Interface
+310         *   DATE:      06NOV26
+311         *   DESC:      Generated SAS Datastep Code
+312         *   TEMPLATE SOURCE:  (None Specified.)
+313         ***********************************************************************/
+314            data _null_;
+315            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+316            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+317            file '/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/lgd_analytics_results_SAS.csv'
+317      ! delimiter=',' DSD DROPOVER lrecl=32767;
+318            if _n_ = 1 then        /* write column names or labels */
+319             do;
+320               put
+321                  "RISK_SEGMENT"
+322               ','
+323                  "RISK_GRADE"
+324               ','
+9                                                          The SAS System                    Saturday, November  7, 2026 12:10:42 AM
+
+325                  "PORTFOLIO_TYPE"
+326               ','
+327                  "ACCOUNT_COUNT"
+328               ','
+329                  "AVG_LGD"
+330               ','
+331                  "MIN_LGD"
+332               ','
+333                  "MAX_LGD"
+334               ','
+335                  "AVG_RISK_SCORE"
+336               ','
+337                  "TOTAL_EAD"
+338               ;
+339             end;
+340           set  V5DATA.LGD_ANALYTICS_RESULTS   end=EFIEOD;
+341               format RISK_SEGMENT $20. ;
+342               format RISK_GRADE $5. ;
+343               format PORTFOLIO_TYPE $15. ;
+344               format ACCOUNT_COUNT best12. ;
+345               format AVG_LGD 8.4 ;
+346               format MIN_LGD 8.4 ;
+347               format MAX_LGD 8.4 ;
+348               format AVG_RISK_SCORE 8.2 ;
+349               format TOTAL_EAD comma20.2 ;
+350             do;
+351               EFIOUT + 1;
+352               put RISK_SEGMENT $ @;
+353               put RISK_GRADE $ @;
+354               put PORTFOLIO_TYPE $ @;
+355               put ACCOUNT_COUNT @;
+356               put AVG_LGD @;
+357               put MIN_LGD @;
+358               put MAX_LGD @;
+359               put AVG_RISK_SCORE @;
+360               put TOTAL_EAD ;
+361               ;
+362             end;
+363            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+364            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+365            run;
+
+NOTE: The file '/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/lgd_analytics_results_SAS.csv' is:
+      Filename=/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/lgd_analytics_results_SAS.csv,
+      Owner Name=umeshzure,Group Name=oda,
+      Access Permission=-rw-r--r--,
+      Last Modified=07Nov2026:00:10:42
+
+NOTE: 7 records were written to the file 
+      '/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/lgd_analytics_results_SAS.csv'.
+      The minimum record length was 70.
+      The maximum record length was 101.
+NOTE: There were 6 observations read from the data set V5DATA.LGD_ANALYTICS_RESULTS.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              10316.59k
+10                                                         The SAS System                    Saturday, November  7, 2026 12:10:42 AM
+
+      OS Memory           43544.00k
+      Timestamp           11/06/2026 06:40:42 PM
+      Step Count                        34  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     132
+      Page Swaps                        0
+      Voluntary Context Switches        12
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           8
+      
+
+6 records created in /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/lgd_analytics_results_SAS.csv from 
+V5DATA.LGD_ANALYTICS_RESULTS.
+  
+  
+NOTE: "/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/DATA/lgd_analytics_results_SAS.csv" file was 
+      successfully created.
+NOTE: PROCEDURE EXPORT used (Total process time):
+      real time           0.04 seconds
+      user cpu time       0.03 seconds
+      system cpu time     0.01 seconds
+      memory              10316.59k
+      OS Memory           43804.00k
+      Timestamp           11/06/2026 06:40:42 PM
+      Step Count                        34  Switch Count  8
+      Page Faults                       0
+      Page Reclaims                     2071
+      Page Swaps                        0
+      Voluntary Context Switches        102
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           120
+      
+
+366        
+367        /*************************************************************************/
+368        /* EXECUTION AUDIT                                                       */
+369        /*************************************************************************/
+370        
+371        %let END_DTM=%sysfunc(datetime());
+372        
+373        data V5DATA.V5_EXECUTION_AUDIT;
+374        
+375        length
+376        MODULE_NAME $100
+377        STATUS $20;
+378        
+379        MODULE_NAME="&MODULE_NAME.";
+SYMBOLGEN:  Macro variable MODULE_NAME resolves to 05_LGD_Analytics
+380        STATUS="SUCCESS";
+381        
+382        START_TIME=&START_DTM.;
+SYMBOLGEN:  Macro variable START_DTM resolves to 2109629441.44952
+383        END_TIME=&END_DTM.;
+SYMBOLGEN:  Macro variable END_DTM resolves to 2109629442.29735
+384        
+385        DURATION_SEC=
+11                                                         The SAS System                    Saturday, November  7, 2026 12:10:42 AM
+
+386        round(
+387        END_TIME-START_TIME,
+388        0.01
+389        );
+390        
+391        format
+392        START_TIME datetime20.
+393        END_TIME datetime20.;
+394        
+395        run;
+
+NOTE: The data set V5DATA.V5_EXECUTION_AUDIT has 1 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              522.93k
+      OS Memory           38052.00k
+      Timestamp           11/06/2026 06:40:42 PM
+      Step Count                        35  Switch Count  1
+      Page Faults                       0
+      Page Reclaims                     89
+      Page Swaps                        0
+      Voluntary Context Switches        39
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+396        
+397        /*************************************************************************/
+398        /* EXECUTION SUMMARY                                                     */
+399        /*************************************************************************/
+400        
+401        data _null_;
+402        
+403        START_TIME=&START_DTM.;
+SYMBOLGEN:  Macro variable START_DTM resolves to 2109629441.44952
+404        END_TIME=&END_DTM.;
+SYMBOLGEN:  Macro variable END_DTM resolves to 2109629442.29735
+405        
+406        DURATION=
+407        round(
+408        END_TIME-START_TIME,
+409        0.01
+410        );
+411        
+412        put "====================================================";
+413        put "MODULE COMPLETED SUCCESSFULLY";
+414        put "====================================================";
+SYMBOLGEN:  Macro variable MODULE_NAME resolves to 05_LGD_Analytics
+415        put "Module Name      = &MODULE_NAME.";
+416        put "Duration Seconds = " DURATION;
+417        put "====================================================";
+418        
+419        run;
+
+====================================================
+12                                                         The SAS System                    Saturday, November  7, 2026 12:10:42 AM
+
+MODULE COMPLETED SUCCESSFULLY
+====================================================
+Module Name      = 05_LGD_Analytics
+Duration Seconds = 0.85
+====================================================
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              346.81k
+      OS Memory           37792.00k
+      Timestamp           11/06/2026 06:40:42 PM
+      Step Count                        36  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     23
+      Page Swaps                        0
+      Voluntary Context Switches        0
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           8
+      
+
+420        
+421        /*************************************************************************/
+422        /* CLOSE OUTPUTS                                                         */
+423        /*************************************************************************/
+424        
+425        ods html5 close;
+426        ods pdf close;
+NOTE: ODS PDF printed 9 pages to 
+      /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/05_LGD_Analytics_Results_SAS.pdf.
+427        
+428        proc printto;
+429        run;
+

@@ -1,0 +1,678 @@
+ 
+ 1          OPTIONS NONOTES NOSTIMER NOSOURCE NOSYNTAXCHECK;
+ SYMBOLGEN:  Macro variable _SASWSTEMP_ resolves to /home/umeshzure/.sasstudio/.images/210eb4ec-c68b-4b81-a1a0-d495b7501129
+ SYMBOLGEN:  Some characters in the above value which were subject to macro quoting have been unquoted for printing.
+ SYMBOLGEN:  Macro variable GRAPHINIT resolves to GOPTIONS RESET=ALL GSFNAME=_GSFNAME;
+ 68         
+ 69         /*********************************************************************/
+ 70         /* PROGRAM      : 01_Enterprise_Portfolio_Generator.sas              */
+ 71         /* PROJECT      : Enterprise Banking Stress Testing Platform         */
+ 72         /* VERSION      : V5 Statistical Risk Modelling                     */
+ 73         /* PURPOSE      : Generate 200K Enterprise Portfolio Dataset        */
+ 74         /*********************************************************************/
+ 75         
+ 76         options mprint mlogic symbolgen fullstimer;
+ 77         
+ 78         /*********************************************************************/
+ 79         /* EXECUTION START                                                   */
+ 80         /*********************************************************************/
+ 81         
+ 82         %let START_DTM=%sysfunc(datetime());
+ 83         
+ 84         data _null_;
+ 85         
+ 86             START_TIME=&START_DTM.;
+ SYMBOLGEN:  Macro variable START_DTM resolves to 2108917929.08619
+ 87         
+ 88             put "====================================================";
+ 89             put "V5 - ENTERPRISE PORTFOLIO GENERATOR";
+ 90             put "====================================================";
+ 91             put "Execution Start Time = " START_TIME datetime20.;
+ 92             put "Target Portfolio Size = 200,000 Records";
+ 93             put "Retail Portfolio      = 100,000 Records";
+ 94             put "Wholesale Portfolio   = 100,000 Records";
+ 95             put "====================================================";
+ 96         
+ 97         run;
+ 
+ ====================================================
+ V5 - ENTERPRISE PORTFOLIO GENERATOR
+ ====================================================
+ Execution Start Time =   29OCT2026:18:32:09
+ Target Portfolio Size = 200,000 Records
+ Retail Portfolio      = 100,000 Records
+ Wholesale Portfolio   = 100,000 Records
+ ====================================================
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.01 seconds
+       system cpu time     0.00 seconds
+       memory              505.00k
+       OS Memory           25000.00k
+       Timestamp           10/29/2026 01:02:09 PM
+       Step Count                        199  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     43
+       Page Swaps                        0
+       Voluntary Context Switches        0
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           0
+       
+ 
+ 98         
+ 99         /*********************************************************************/
+ 100        /* GENERATE PORTFOLIO DATASET                                        */
+ 101        /*********************************************************************/
+ 102        
+ 103        data work.enterprise_portfolio_200k;
+ 104        
+ 105            call streaminit(12345);
+ 106        
+ 107            length
+ 108                CUSTOMER_ID $20
+ 109                LOAN_ID $20
+ 110                PORTFOLIO_TYPE $15
+ 111                PRODUCT_TYPE $30
+ 112                REGION $20
+ 113                DELINQUENCY_BUCKET $20;
+ 114        
+ 115            do RECORD_ID=1 to 200000;
+ 116        
+ 117                CUSTOMER_ID =
+ 118                    cats('CUST', put(RECORD_ID,z8.));
+ 119        
+ 120                LOAN_ID =
+ 121                    cats('LOAN', put(RECORD_ID,z8.));
+ 122        
+ 123                /*************************************************************/
+ 124                /* PORTFOLIO CLASSIFICATION                                  */
+ 125                /*************************************************************/
+ 126        
+ 127                if RECORD_ID <= 100000 then do;
+ 128        
+ 129                    PORTFOLIO_TYPE='RETAIL';
+ 130        
+ 131                    PRODUCT_RANDOM=
+ 132                        ceil(rand('uniform')*4);
+ 133        
+ 134                    if PRODUCT_RANDOM=1 then PRODUCT_TYPE='Mortgage';
+ 135                    else if PRODUCT_RANDOM=2 then PRODUCT_TYPE='Personal Loan';
+ 136                    else if PRODUCT_RANDOM=3 then PRODUCT_TYPE='Auto Loan';
+ 137                    else PRODUCT_TYPE='Credit Card';
+ 138        
+ 139                end;
+ 140        
+ 141                else do;
+ 142        
+ 143                    PORTFOLIO_TYPE='WHOLESALE';
+ 144        
+ 145                    PRODUCT_RANDOM=
+ 146                        ceil(rand('uniform')*4);
+ 147        
+ 148                    if PRODUCT_RANDOM=1 then PRODUCT_TYPE='Corporate Loan';
+ 149                    else if PRODUCT_RANDOM=2 then PRODUCT_TYPE='SME Loan';
+ 150                    else if PRODUCT_RANDOM=3 then PRODUCT_TYPE='Trade Finance';
+ 151                    else PRODUCT_TYPE='Project Finance';
+ 152        
+ 153                end;
+ 154        
+ 155                /*************************************************************/
+ 156                /* REGION                                                    */
+ 157                /*************************************************************/
+ 158        
+ 159                REGION_RANDOM=
+ 160                    ceil(rand('uniform')*5);
+ 161        
+ 162                if REGION_RANDOM=1 then REGION='North';
+ 163                else if REGION_RANDOM=2 then REGION='South';
+ 164                else if REGION_RANDOM=3 then REGION='East';
+ 165                else if REGION_RANDOM=4 then REGION='West';
+ 166                else REGION='Central';
+ 167        
+ 168                /*************************************************************/
+ 169                /* CREDIT ATTRIBUTES                                          */
+ 170                /*************************************************************/
+ 171        
+ 172                CREDIT_SCORE=
+ 173                    floor(300 + rand('uniform')*550);
+ 174        
+ 175                ANNUAL_INCOME=
+ 176                    round(
+ 177                        300000 +
+ 178                        rand('uniform')*5000000,
+ 179                        100
+ 180                    );
+ 181        
+ 182                LOAN_AMOUNT=
+ 183                    round(
+ 184                        50000 +
+ 185                        rand('uniform')*10000000,
+ 186                        100
+ 187                    );
+ 188        
+ 189                OUTSTANDING_BALANCE=
+ 190                    round(
+ 191                        LOAN_AMOUNT *
+ 192                        (0.20 + rand('uniform')*0.80),
+ 193                        100
+ 194                    );
+ 195        
+ 196                /*************************************************************/
+ 197                /* RISK ATTRIBUTES                                            */
+ 198                /*************************************************************/
+ 199        
+ 200                LTV=
+ 201                    round(
+ 202                        40 +
+ 203                        rand('uniform')*60,
+ 204                        0.01
+ 205                    );
+ 206        
+ 207                DTI=
+ 208                    round(
+ 209                        5 +
+ 210                        rand('uniform')*55,
+ 211                        0.01
+ 212                    );
+ 213        
+ 214                YEARS_ON_BOOK=
+ 215                    floor(rand('uniform')*20)+1;
+ 216        
+ 217                /*************************************************************/
+ 218                /* DELINQUENCY STATUS                                         */
+ 219                /*************************************************************/
+ 220        
+ 221                RANDOM_DPD=
+ 222                    ceil(rand('uniform')*4);
+ 223        
+ 224                if RANDOM_DPD=1 then
+ 225                    DELINQUENCY_BUCKET='CURRENT';
+ 226                else if RANDOM_DPD=2 then
+ 227                    DELINQUENCY_BUCKET='30_DPD';
+ 228                else if RANDOM_DPD=3 then
+ 229                    DELINQUENCY_BUCKET='60_DPD';
+ 230                else
+ 231                    DELINQUENCY_BUCKET='90_PLUS_DPD';
+ 232        
+ 233                /*************************************************************/
+ 234                /* MACROECONOMIC VARIABLES                                   */
+ 235                /*************************************************************/
+ 236        
+ 237                GDP_GROWTH_RATE=
+ 238                    round(
+ 239                        -2 + rand('uniform')*8,
+ 240                        0.01
+ 241                    );
+ 242        
+ 243                UNEMPLOYMENT_RATE=
+ 244                    round(
+ 245                        2 + rand('uniform')*8,
+ 246                        0.01
+ 247                    );
+ 248        
+ 249                INTEREST_RATE=
+ 250                    round(
+ 251                        4 + rand('uniform')*8,
+ 252                        0.01
+ 253                    );
+ 254        
+ 255                /*************************************************************/
+ 256                /* RISK METRICS                                               */
+ 257                /*************************************************************/
+ 258        
+ 259                PD=
+ 260                    round(
+ 261                        rand('uniform')*0.20,
+ 262                        0.0001
+ 263                    );
+ 264        
+ 265                LGD=
+ 266                    round(
+ 267                        rand('uniform')*0.70,
+ 268                        0.0001
+ 269                    );
+ 270        
+ 271                EAD=
+ 272                    OUTSTANDING_BALANCE;
+ 273        
+ 274                OBSERVED_DEFAULT=
+ 275                    (rand('uniform') < PD);
+ 276        
+ 277                output;
+ 278        
+ 279            end;
+ 280        
+ 281        run;
+ 
+ NOTE: The data set WORK.ENTERPRISE_PORTFOLIO_200K has 200000 observations and 24 variables.
+ NOTE: DATA statement used (Total process time):
+       real time           0.20 seconds
+       user cpu time       0.18 seconds
+       system cpu time     0.02 seconds
+       memory              2104.56k
+       OS Memory           26284.00k
+       Timestamp           10/29/2026 01:02:09 PM
+       Step Count                        200  Switch Count  2
+       Page Faults                       0
+       Page Reclaims                     203
+       Page Swaps                        0
+       Voluntary Context Switches        10
+       Involuntary Context Switches      1
+       Block Input Operations            0
+       Block Output Operations           106512
+       
+ 
+ 282        
+ 283        /*********************************************************************/
+ 284        /* VALIDATION 1 - RECORD COUNT                                       */
+ 285        /*********************************************************************/
+ 286        
+ 287        title "VALIDATION - TOTAL RECORD COUNT";
+ 288        
+ 289        proc sql;
+ 290        
+ 291        select count(*) as TOTAL_RECORDS
+ 292        from work.enterprise_portfolio_200k;
+ 293        
+ 294        quit;
+ NOTE: PROCEDURE SQL used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.01 seconds
+       system cpu time     0.01 seconds
+       memory              6967.46k
+       OS Memory           31408.00k
+       Timestamp           10/29/2026 01:02:09 PM
+       Step Count                        201  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     445
+       Page Swaps                        0
+       Voluntary Context Switches        3
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           8
+       
+ 
+ 295        
+ 296        /*********************************************************************/
+ 297        /* VALIDATION 2 - PORTFOLIO SPLIT                                    */
+ 298        /*********************************************************************/
+ 299        
+ 300        title "VALIDATION - RETAIL VS WHOLESALE";
+ 301        
+ 302        proc freq
+ 303            data=work.enterprise_portfolio_200k;
+ 304        
+ 305        tables
+ 306            PORTFOLIO_TYPE;
+ 307        
+ 308        run;
+ 
+ NOTE: There were 200000 observations read from the data set WORK.ENTERPRISE_PORTFOLIO_200K.
+ NOTE: PROCEDURE FREQ used (Total process time):
+       real time           0.02 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.00 seconds
+       memory              2286.81k
+       OS Memory           27312.00k
+       Timestamp           10/29/2026 01:02:09 PM
+       Step Count                        202  Switch Count  3
+       Page Faults                       0
+       Page Reclaims                     375
+       Page Swaps                        0
+       Voluntary Context Switches        24
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           264
+       
+ 
+ 309        
+ 310        /*********************************************************************/
+ 311        /* VALIDATION 3 - PRODUCT DISTRIBUTION                               */
+ 312        /*********************************************************************/
+ 313        
+ 314        title "VALIDATION - PRODUCT DISTRIBUTION";
+ 315        
+ 316        proc freq
+ 317            data=work.enterprise_portfolio_200k;
+ 318        
+ 319        tables
+ 320            PRODUCT_TYPE;
+ 321        
+ 322        run;
+ 
+ NOTE: There were 200000 observations read from the data set WORK.ENTERPRISE_PORTFOLIO_200K.
+ NOTE: PROCEDURE FREQ used (Total process time):
+       real time           0.03 seconds
+       user cpu time       0.02 seconds
+       system cpu time     0.02 seconds
+       memory              2189.68k
+       OS Memory           27568.00k
+       Timestamp           10/29/2026 01:02:09 PM
+       Step Count                        203  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     325
+       Page Swaps                        0
+       Voluntary Context Switches        33
+       Involuntary Context Switches      2
+       Block Input Operations            0
+       Block Output Operations           264
+       
+ 
+ 323        
+ 324        /*********************************************************************/
+ 325        /* VALIDATION 4 - SUMMARY STATISTICS                                 */
+ 326        /*********************************************************************/
+ 327        
+ 328        title "PORTFOLIO SUMMARY STATISTICS";
+ 329        
+ 330        proc means
+ 331            data=work.enterprise_portfolio_200k
+ 332            n mean min max maxdec=2;
+ 333        
+ 334        var
+ 335        
+ 336            CREDIT_SCORE
+ 337            ANNUAL_INCOME
+ 338            LOAN_AMOUNT
+ 339            OUTSTANDING_BALANCE
+ 340            LTV
+ 341            DTI
+ 342            PD
+ 343            LGD
+ 344            EAD;
+ 345        
+ 346        run;
+ 
+ NOTE: There were 200000 observations read from the data set WORK.ENTERPRISE_PORTFOLIO_200K.
+ NOTE: PROCEDURE MEANS used (Total process time):
+       real time           0.04 seconds
+       user cpu time       0.07 seconds
+       system cpu time     0.01 seconds
+       memory              7575.18k
+       OS Memory           32448.00k
+       Timestamp           10/29/2026 01:02:09 PM
+       Step Count                        204  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     1638
+       Page Swaps                        0
+       Voluntary Context Switches        124
+       Involuntary Context Switches      2
+       Block Input Operations            0
+       Block Output Operations           0
+       
+ 
+ 347        
+ 348        /*********************************************************************/
+ 349        /* VALIDATION 5 - SAMPLE OBSERVATIONS                                */
+ 350        /*********************************************************************/
+ 351        
+ 352        title "SAMPLE PORTFOLIO RECORDS";
+ 353        
+ 354        proc print
+ 355            data=work.enterprise_portfolio_200k(obs=20);
+ 356        
+ 357        run;
+ 
+ NOTE: There were 20 observations read from the data set WORK.ENTERPRISE_PORTFOLIO_200K.
+ NOTE: PROCEDURE PRINT used (Total process time):
+       real time           0.05 seconds
+       user cpu time       0.05 seconds
+       system cpu time     0.01 seconds
+       memory              2183.96k
+       OS Memory           27308.00k
+       Timestamp           10/29/2026 01:02:09 PM
+       Step Count                        205  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     271
+       Page Swaps                        0
+       Voluntary Context Switches        0
+       Involuntary Context Switches      1
+       Block Input Operations            0
+       Block Output Operations           48
+       
+ 
+ 358        
+ 359        /*********************************************************************/
+ 360        /* EXECUTION COMPLETION                                               */
+ 361        /*********************************************************************/
+ 362        
+ 363        %let END_DTM=%sysfunc(datetime());
+ 364        
+ 365        data _null_;
+ 366        
+ 367            START_TIME=&START_DTM.;
+ SYMBOLGEN:  Macro variable START_DTM resolves to 2108917929.08619
+ 368            END_TIME=&END_DTM.;
+ SYMBOLGEN:  Macro variable END_DTM resolves to 2108917929.47819
+ 369        
+ 370            DURATION=
+ 371                round(
+ 372                    END_TIME-START_TIME,
+ 373                    0.01
+ 374                );
+ 375        
+ 376            put "====================================================";
+ 377            put "V5 ENTERPRISE PORTFOLIO GENERATION COMPLETED";
+ 378            put "====================================================";
+ 379            put "Execution Start = " START_TIME datetime20.;
+ 380            put "Execution End   = " END_TIME datetime20.;
+ 381            put "Duration (Sec)  = " DURATION;
+ 382            put "Records Created = 200000";
+ 383            put "Retail Records  = 100000";
+ 384            put "Wholesale Recs  = 100000";
+ 385            put "====================================================";
+ 386        
+ 387        run;
+ 
+ ====================================================
+ V5 ENTERPRISE PORTFOLIO GENERATION COMPLETED
+ ====================================================
+ Execution Start =   29OCT2026:18:32:09
+ Execution End   =   29OCT2026:18:32:09
+ Duration (Sec)  = 0.39
+ Records Created = 200000
+ Retail Records  = 100000
+ Wholesale Recs  = 100000
+ ====================================================
+ NOTE: DATA statement used (Total process time):
+       real time           0.00 seconds
+       user cpu time       0.00 seconds
+       system cpu time     0.00 seconds
+       memory              493.71k
+       OS Memory           26280.00k
+       Timestamp           10/29/2026 01:02:09 PM
+       Step Count                        206  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     26
+       Page Swaps                        0
+       Voluntary Context Switches        0
+       Involuntary Context Switches      0
+       Block Input Operations            0
+       Block Output Operations           8
+       
+ 
+ 388        
+ 389        proc export
+ 390            data=work.enterprise_portfolio_200k
+ 391            outfile="/home/&sysuserid/enterprise_portfolio_200k.csv"
+ SYMBOLGEN:  Macro variable SYSUSERID resolves to umeshzure
+ 392            dbms=csv
+ 393            replace;
+ 394        run;
+ 
+ NOTE: Unable to open parameter catalog: SASUSER.PARMS.PARMS.SLIST in update mode. Temporary parameter values will be saved to 
+ WORK.PARMS.PARMS.SLIST.
+ 395         /**********************************************************************
+ 396         *   PRODUCT:   SAS
+ 397         *   VERSION:   9.4
+ 398         *   CREATOR:   External File Interface
+ 399         *   DATE:      29OCT26
+ 400         *   DESC:      Generated SAS Datastep Code
+ 401         *   TEMPLATE SOURCE:  (None Specified.)
+ 402         ***********************************************************************/
+ 403            data _null_;
+ 404            %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+ 405            %let _EFIREC_ = 0;     /* clear export record count macro variable */
+ 406            file '/home/umeshzure/enterprise_portfolio_200k.csv' delimiter=',' DSD DROPOVER lrecl=32767;
+ 407            if _n_ = 1 then        /* write column names or labels */
+ 408             do;
+ 409               put
+ 410                  "CUSTOMER_ID"
+ 411               ','
+ 412                  "LOAN_ID"
+ 413               ','
+ 414                  "PORTFOLIO_TYPE"
+ 415               ','
+ 416                  "PRODUCT_TYPE"
+ 417               ','
+ 418                  "REGION"
+ 419               ','
+ 420                  "DELINQUENCY_BUCKET"
+ 421               ','
+ 422                  "RECORD_ID"
+ 423               ','
+ 424                  "PRODUCT_RANDOM"
+ 425               ','
+ 426                  "REGION_RANDOM"
+ 427               ','
+ 428                  "CREDIT_SCORE"
+ 429               ','
+ 430                  "ANNUAL_INCOME"
+ 431               ','
+ 432                  "LOAN_AMOUNT"
+ 433               ','
+ 434                  "OUTSTANDING_BALANCE"
+ 435               ','
+ 436                  "LTV"
+ 437               ','
+ 438                  "DTI"
+ 439               ','
+ 440                  "YEARS_ON_BOOK"
+ 441               ','
+ 442                  "RANDOM_DPD"
+ 443               ','
+ 444                  "GDP_GROWTH_RATE"
+ 445               ','
+ 446                  "UNEMPLOYMENT_RATE"
+ 447               ','
+ 448                  "INTEREST_RATE"
+ 449               ','
+ 450                  "PD"
+ 451               ','
+ 452                  "LGD"
+ 453               ','
+ 454                  "EAD"
+ 455               ','
+ 456                  "OBSERVED_DEFAULT"
+ 457               ;
+ 458             end;
+ 459           set  WORK.ENTERPRISE_PORTFOLIO_200K   end=EFIEOD;
+ 460               format CUSTOMER_ID $20. ;
+ 461               format LOAN_ID $20. ;
+ 462               format PORTFOLIO_TYPE $15. ;
+ 463               format PRODUCT_TYPE $30. ;
+ 464               format REGION $20. ;
+ 465               format DELINQUENCY_BUCKET $20. ;
+ 466               format RECORD_ID best12. ;
+ 467               format PRODUCT_RANDOM best12. ;
+ 468               format REGION_RANDOM best12. ;
+ 469               format CREDIT_SCORE best12. ;
+ 470               format ANNUAL_INCOME best12. ;
+ 471               format LOAN_AMOUNT best12. ;
+ 472               format OUTSTANDING_BALANCE best12. ;
+ 473               format LTV best12. ;
+ 474               format DTI best12. ;
+ 475               format YEARS_ON_BOOK best12. ;
+ 476               format RANDOM_DPD best12. ;
+ 477               format GDP_GROWTH_RATE best12. ;
+ 478               format UNEMPLOYMENT_RATE best12. ;
+ 479               format INTEREST_RATE best12. ;
+ 480               format PD best12. ;
+ 481               format LGD best12. ;
+ 482               format EAD best12. ;
+ 483               format OBSERVED_DEFAULT best12. ;
+ 484             do;
+ 485               EFIOUT + 1;
+ 486               put CUSTOMER_ID $ @;
+ 487               put LOAN_ID $ @;
+ 488               put PORTFOLIO_TYPE $ @;
+ 489               put PRODUCT_TYPE $ @;
+ 490               put REGION $ @;
+ 491               put DELINQUENCY_BUCKET $ @;
+ 492               put RECORD_ID @;
+ 493               put PRODUCT_RANDOM @;
+ 494               put REGION_RANDOM @;
+ 495               put CREDIT_SCORE @;
+ 496               put ANNUAL_INCOME @;
+ 497               put LOAN_AMOUNT @;
+ 498               put OUTSTANDING_BALANCE @;
+ 499               put LTV @;
+ 500               put DTI @;
+ 501               put YEARS_ON_BOOK @;
+ 502               put RANDOM_DPD @;
+ 503               put GDP_GROWTH_RATE @;
+ 504               put UNEMPLOYMENT_RATE @;
+ 505               put INTEREST_RATE @;
+ 506               put PD @;
+ 507               put LGD @;
+ 508               put EAD @;
+ 509               put OBSERVED_DEFAULT ;
+ 510               ;
+ 511             end;
+ 512            if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+ 513            if EFIEOD then call symputx('_EFIREC_',EFIOUT);
+ 514            run;
+ 
+ NOTE: The file '/home/umeshzure/enterprise_portfolio_200k.csv' is:
+       Filename=/home/umeshzure/enterprise_portfolio_200k.csv,
+       Owner Name=umeshzure,Group Name=oda,
+       Access Permission=-rw-r--r--,
+       Last Modified=29Oct2026:18:32:09
+ 
+ NOTE: 200001 records were written to the file '/home/umeshzure/enterprise_portfolio_200k.csv'.
+       The minimum record length was 134.
+       The maximum record length was 280.
+ NOTE: There were 200000 observations read from the data set WORK.ENTERPRISE_PORTFOLIO_200K.
+ NOTE: DATA statement used (Total process time):
+       real time           0.88 seconds
+       user cpu time       0.79 seconds
+       system cpu time     0.04 seconds
+       memory              12277.96k
+       OS Memory           36640.00k
+       Timestamp           10/29/2026 01:02:10 PM
+       Step Count                        207  Switch Count  0
+       Page Faults                       0
+       Page Reclaims                     320
+       Page Swaps                        0
+       Voluntary Context Switches        698
+       Involuntary Context Switches      4
+       Block Input Operations            0
+       Block Output Operations           60288
+       
+ 
+ 200000 records created in /home/umeshzure/enterprise_portfolio_200k.csv from WORK.ENTERPRISE_PORTFOLIO_200K.
+   
+   
+ NOTE: "/home/umeshzure/enterprise_portfolio_200k.csv" file was successfully created.
+ NOTE: PROCEDURE EXPORT used (Total process time):
+       real time           0.91 seconds
+       user cpu time       0.82 seconds
+       system cpu time     0.04 seconds
+       memory              12277.96k
+       OS Memory           36900.00k
+       Timestamp           10/29/2026 01:02:10 PM
+       Step Count                        207  Switch Count  7
+       Page Faults                       0
+       Page Reclaims                     2173
+       Page Swaps                        0
+       Voluntary Context Switches        749
+       Involuntary Context Switches      4
+       Block Input Operations            0
+       Block Output Operations           60352
+       
+ 
+ 515        
+ 516        OPTIONS NONOTES NOSTIMER NOSOURCE NOSYNTAXCHECK;
+ SYMBOLGEN:  Macro variable GRAPHTERM resolves to GOPTIONS NOACCESSIBLE;
+ 526        

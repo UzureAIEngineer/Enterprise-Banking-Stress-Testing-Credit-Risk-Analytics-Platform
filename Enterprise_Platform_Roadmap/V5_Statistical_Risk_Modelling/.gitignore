@@ -1,0 +1,17 @@
+# SAS datasets
+*.sas7bdat
+
+# Large generated datasets
+*_analytics_results.csv
+stress_test_results.csv
+
+# Raw portfolio datasets
+enterprise_portfolio_200k.csv
+enterprise_portfolio_enriched.csv
+
+# Python
+__pycache__/
+.ipynb_checkpoints/
+
+# Temp
+git_objects.txt

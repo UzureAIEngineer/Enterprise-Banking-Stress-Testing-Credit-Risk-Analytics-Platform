@@ -1,0 +1,625 @@
+NOTE: PROCEDURE PRINTTO used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              256.59k
+      OS Memory           19360.00k
+      Timestamp           11/09/2026 01:03:19 PM
+      Step Count                        25  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     17
+      Page Swaps                        0
+      Voluntary Context Switches        8
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+110        
+111        /****************************************************************************/
+112        /* INPUT VALIDATION                                                         */
+113        /****************************************************************************/
+114        
+115        %macro validate_input;
+116        
+117            %if not %sysfunc(exist(BANK.EAD_ANALYTICS_RESULTS))
+118            %then %do;
+119        
+120                %put ERROR: EAD_ANALYTICS_RESULTS DATASET NOT FOUND.;
+121                %abort cancel;
+122        
+123            %end;
+124        
+125        %mend;
+126        
+127        %validate_input;
+MLOGIC(VALIDATE_INPUT):  Beginning execution.
+MLOGIC(VALIDATE_INPUT):  %IF condition not %sysfunc(exist(BANK.EAD_ANALYTICS_RESULTS)) is FALSE
+MLOGIC(VALIDATE_INPUT):  Ending execution.
+128        
+129        /****************************************************************************/
+130        /* LOAD INPUT                                                               */
+131        /****************************************************************************/
+132        
+133        data WORK.INPUT_EAD;
+134        
+135            set BANK.EAD_ANALYTICS_RESULTS;
+                                                           The SAS System
+
+136        
+137        run;
+
+NOTE: There were 200000 observations read from the data set BANK.EAD_ANALYTICS_RESULTS.
+NOTE: The data set WORK.INPUT_EAD has 200000 observations and 38 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.15 seconds
+      user cpu time       0.04 seconds
+      system cpu time     0.07 seconds
+      memory              3479.87k
+      OS Memory           23976.00k
+      Timestamp           11/09/2026 01:03:19 PM
+      Step Count                        26  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     757
+      Page Swaps                        0
+      Voluntary Context Switches        731
+      Involuntary Context Switches      16
+      Block Input Operations            0
+      Block Output Operations           181768
+      
+
+138        
+139        /****************************************************************************/
+140        /* RECORD COUNT                                                             */
+141        /****************************************************************************/
+142        
+143        proc sql noprint;
+144        
+145        select count(*)
+146        into :TOTAL_RECORDS
+147        
+148        from WORK.INPUT_EAD;
+149        
+150        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              6836.81k
+      OS Memory           27304.00k
+      Timestamp           11/09/2026 01:03:19 PM
+      Step Count                        27  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     258
+      Page Swaps                        0
+      Voluntary Context Switches        0
+      Involuntary Context Switches      1
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+SYMBOLGEN:  Macro variable TOTAL_RECORDS resolves to   200000
+151        
+152        %put TOTAL RECORDS=&TOTAL_RECORDS.;
+TOTAL RECORDS=  200000
+153        
+154        /****************************************************************************/
+                                                           The SAS System
+
+155        /* ECL CALCULATION                                                          */
+156        /****************************************************************************/
+157        
+158        data BANK.ECL_ANALYTICS_RESULTS;
+159        
+160            set WORK.INPUT_EAD;
+161        
+162            length ECL_BAND $20;
+163            length ECL_RATING $20;
+164        
+165            /*--------------------------------------------------------------------*/
+166            /* ECL Formula                                                        */
+167            /*--------------------------------------------------------------------*/
+168        
+169            ECL_AMOUNT =
+170                PD *
+171                LGD *
+172                ADJUSTED_EAD;
+173        
+174            /*--------------------------------------------------------------------*/
+175            /* ECL Banding                                                        */
+176            /*--------------------------------------------------------------------*/
+177        
+178            if ECL_AMOUNT < 2000 then
+179                ECL_BAND='LOW';
+180        
+181            else if ECL_AMOUNT < 10000 then
+182                ECL_BAND='MODERATE';
+183        
+184            else if ECL_AMOUNT < 50000 then
+185                ECL_BAND='HIGH';
+186        
+187            else
+188                ECL_BAND='CRITICAL';
+189        
+190            /*--------------------------------------------------------------------*/
+191            /* ECL Rating                                                         */
+192            /*--------------------------------------------------------------------*/
+193        
+194            if ECL_AMOUNT < 2000 then
+195                ECL_RATING='MINIMAL';
+196        
+197            else if ECL_AMOUNT < 10000 then
+198                ECL_RATING='WATCHLIST';
+199        
+200            else if ECL_AMOUNT < 50000 then
+201                ECL_RATING='SIGNIFICANT';
+202        
+203            else
+204                ECL_RATING='SEVERE';
+205        
+206        run;
+
+NOTE: There were 200000 observations read from the data set WORK.INPUT_EAD.
+NOTE: The data set BANK.ECL_ANALYTICS_RESULTS has 200000 observations and 41 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.26 seconds
+      user cpu time       0.03 seconds
+                                                           The SAS System
+
+      system cpu time     0.07 seconds
+      memory              3501.50k
+      OS Memory           24232.00k
+      Timestamp           11/09/2026 01:03:19 PM
+      Step Count                        28  Switch Count  1
+      Page Faults                       0
+      Page Reclaims                     520
+      Page Swaps                        0
+      Voluntary Context Switches        2121
+      Involuntary Context Switches      5
+      Block Input Operations            0
+      Block Output Operations           200968
+      
+
+207        
+208        /****************************************************************************/
+209        /* ECL AUDIT                                                                */
+210        /****************************************************************************/
+211        
+212        proc sql;
+213        
+214        create table BANK.ECL_AUDIT as
+215        
+216        select
+217        
+218        count(*) as TOTAL_RECORDS,
+219        
+220        sum(missing(ECL_AMOUNT))
+221            as MISSING_ECL,
+222        
+223        min(ECL_AMOUNT)
+224            as MIN_ECL
+225            format=comma20.2,
+226        
+227        avg(ECL_AMOUNT)
+228            as AVG_ECL
+229            format=comma20.2,
+230        
+231        max(ECL_AMOUNT)
+232            as MAX_ECL
+233            format=comma20.2
+234        
+235        from BANK.ECL_ANALYTICS_RESULTS;
+NOTE: Table BANK.ECL_AUDIT created, with 1 rows and 5 columns.
+
+236        
+237        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.15 seconds
+      user cpu time       0.04 seconds
+      system cpu time     0.06 seconds
+      memory              6860.40k
+      OS Memory           27560.00k
+      Timestamp           11/09/2026 01:03:20 PM
+      Step Count                        29  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     334
+      Page Swaps                        0
+                                                           The SAS System
+
+      Voluntary Context Switches        874
+      Involuntary Context Switches      26
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+238        
+239        /****************************************************************************/
+240        /* ECL SUMMARY                                                              */
+241        /****************************************************************************/
+242        
+243        proc sql;
+244        
+245        create table BANK.ECL_SUMMARY as
+246        
+247        select
+248        
+249        PORTFOLIO_TYPE,
+250        RISK_GRADE,
+251        ECL_BAND,
+252        ECL_RATING,
+253        
+254        count(*) as ACCOUNT_COUNT,
+255        
+256        sum(ECL_AMOUNT)
+257            as TOTAL_ECL
+258            format=comma20.2,
+259        
+260        avg(ECL_AMOUNT)
+261            as AVG_ECL
+262            format=comma20.2
+263        
+264        from BANK.ECL_ANALYTICS_RESULTS
+265        
+266        group by
+267        
+268        PORTFOLIO_TYPE,
+269        RISK_GRADE,
+270        ECL_BAND,
+271        ECL_RATING;
+NOTE: Table BANK.ECL_SUMMARY created, with 24 rows and 7 columns.
+
+272        
+273        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.10 seconds
+      user cpu time       0.16 seconds
+      system cpu time     0.04 seconds
+      memory              34211.23k
+      OS Memory           54872.00k
+      Timestamp           11/09/2026 01:03:20 PM
+      Step Count                        30  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     7897
+      Page Swaps                        0
+      Voluntary Context Switches        485
+      Involuntary Context Switches      15
+      Block Input Operations            0
+                                                           The SAS System
+
+      Block Output Operations           264
+      
+
+274        
+275        /****************************************************************************/
+276        /* PORTFOLIO METRICS                                                        */
+277        /****************************************************************************/
+278        
+279        proc sql;
+280        
+281        create table BANK.ECL_PORTFOLIO_METRICS as
+282        
+283        select
+284        
+285        count(*) as TOTAL_ACCOUNTS,
+286        
+287        sum(ECL_AMOUNT)
+288            as PORTFOLIO_ECL
+289            format=comma20.2,
+290        
+291        avg(ECL_AMOUNT)
+292            as AVG_ECL
+293            format=comma20.2,
+294        
+295        min(ECL_AMOUNT)
+296            as MIN_ECL
+297            format=comma20.2,
+298        
+299        max(ECL_AMOUNT)
+300            as MAX_ECL
+301            format=comma20.2
+302        
+303        from BANK.ECL_ANALYTICS_RESULTS;
+NOTE: Table BANK.ECL_PORTFOLIO_METRICS created, with 1 rows and 5 columns.
+
+304        
+305        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.05 seconds
+      user cpu time       0.02 seconds
+      system cpu time     0.02 seconds
+      memory              6846.71k
+      OS Memory           29352.00k
+      Timestamp           11/09/2026 01:03:20 PM
+      Step Count                        31  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     312
+      Page Swaps                        0
+      Voluntary Context Switches        32
+      Involuntary Context Switches      2
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+306        
+307        /****************************************************************************/
+308        /* FREQUENCY ANALYSIS                                                       */
+309        /****************************************************************************/
+                                                           The SAS System
+
+310        
+311        proc freq data=BANK.ECL_ANALYTICS_RESULTS;
+312        
+313        tables
+314        
+315        ECL_BAND
+316        ECL_RATING
+317        PORTFOLIO_TYPE
+318        RISK_GRADE;
+319        
+320        run;
+
+NOTE: There were 200000 observations read from the data set BANK.ECL_ANALYTICS_RESULTS.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.10 seconds
+      user cpu time       0.08 seconds
+      system cpu time     0.03 seconds
+      memory              2872.76k
+      OS Memory           24488.00k
+      Timestamp           11/09/2026 01:03:20 PM
+      Step Count                        32  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     502
+      Page Swaps                        0
+      Voluntary Context Switches        17
+      Involuntary Context Switches      4
+      Block Input Operations            0
+      Block Output Operations           272
+      
+
+321        
+322        /****************************************************************************/
+323        /* HTML REPORT                                                              */
+324        /****************************************************************************/
+325        
+326        ods html
+327        file="&OUTPUT_PATH./07_ECL_Calculation_Results_SAS.html"
+SYMBOLGEN:  Macro variable OUTPUT_PATH resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT
+328        style=statistical;
+NOTE: Writing HTML Body file: 
+      /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/07_ECL_Calculation_Results_SAS.html
+329        
+330        title "Module 07 - Expected Credit Loss Analytics";
+331        
+332        proc print data=BANK.ECL_PORTFOLIO_METRICS;
+333        run;
+
+NOTE: There were 1 observations read from the data set BANK.ECL_PORTFOLIO_METRICS.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.02 seconds
+      system cpu time     0.00 seconds
+      memory              1871.84k
+      OS Memory           28068.00k
+      Timestamp           11/09/2026 01:03:20 PM
+      Step Count                        33  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     469
+                                                           The SAS System
+
+      Page Swaps                        0
+      Voluntary Context Switches        10
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           72
+      
+
+334        
+335        proc print data=BANK.ECL_SUMMARY(obs=100);
+336        run;
+
+NOTE: There were 24 observations read from the data set BANK.ECL_SUMMARY.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.03 seconds
+      user cpu time       0.03 seconds
+      system cpu time     0.00 seconds
+      memory              564.15k
+      OS Memory           28068.00k
+      Timestamp           11/09/2026 01:03:20 PM
+      Step Count                        34  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     97
+      Page Swaps                        0
+      Voluntary Context Switches        11
+      Involuntary Context Switches      2
+      Block Input Operations            0
+      Block Output Operations           32
+      
+
+337        
+338        ods html close;
+339        
+340        /****************************************************************************/
+341        /* PDF REPORT                                                               */
+342        /****************************************************************************/
+343        
+344        ods pdf
+345        file="&OUTPUT_PATH./07_ECL_Calculation_Results_SAS.pdf";
+SYMBOLGEN:  Macro variable OUTPUT_PATH resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT
+NOTE: Writing ODS PDF output to DISK destination 
+      "/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/07_ECL_Calculation_Results_SAS.pdf", 
+      printer "PDF".
+346        
+347        title "Module 07 - Expected Credit Loss Analytics";
+348        
+349        proc print data=BANK.ECL_PORTFOLIO_METRICS;
+350        run;
+
+NOTE: There were 1 observations read from the data set BANK.ECL_PORTFOLIO_METRICS.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              1289.15k
+      OS Memory           27048.00k
+      Timestamp           11/09/2026 01:03:20 PM
+      Step Count                        35  Switch Count  0
+      Page Faults                       0
+                                                           The SAS System
+
+      Page Reclaims                     195
+      Page Swaps                        0
+      Voluntary Context Switches        7
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+351        
+352        proc means
+353        data=BANK.ECL_ANALYTICS_RESULTS
+354        n mean min max sum;
+355        var ECL_AMOUNT;
+356        run;
+
+NOTE: There were 200000 observations read from the data set BANK.ECL_ANALYTICS_RESULTS.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.03 seconds
+      user cpu time       0.03 seconds
+      system cpu time     0.03 seconds
+      memory              8583.31k
+      OS Memory           34252.00k
+      Timestamp           11/09/2026 01:03:20 PM
+      Step Count                        36  Switch Count  16
+      Page Faults                       0
+      Page Reclaims                     1959
+      Page Swaps                        0
+      Voluntary Context Switches        88
+      Involuntary Context Switches      2
+      Block Input Operations            0
+      Block Output Operations           16
+      
+
+357        
+358        proc freq data=BANK.ECL_ANALYTICS_RESULTS;
+359        tables ECL_BAND;
+360        run;
+
+NOTE: There were 200000 observations read from the data set BANK.ECL_ANALYTICS_RESULTS.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.04 seconds
+      user cpu time       0.02 seconds
+      system cpu time     0.01 seconds
+      memory              2193.56k
+      OS Memory           28332.00k
+      Timestamp           11/09/2026 01:03:20 PM
+      Step Count                        37  Switch Count  17
+      Page Faults                       0
+      Page Reclaims                     323
+      Page Swaps                        0
+      Voluntary Context Switches        59
+      Involuntary Context Switches      4
+      Block Input Operations            0
+      Block Output Operations           272
+      
+
+361        
+362        ods pdf close;
+                                                           The SAS System
+
+NOTE: ODS PDF printed 3 pages to 
+      /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/07_ECL_Calculation_Results_SAS.pdf.
+363        
+364        /****************************************************************************/
+365        /* EXECUTION AUDIT                                                          */
+366        /****************************************************************************/
+367        
+368        data BANK.V5_EXECUTION_AUDIT;
+369        
+370        length MODULE_NAME $100;
+371        
+372        MODULE_NAME="07_ECL_Calculation";
+373        
+374        START_TIME=&START_TIME.;
+SYMBOLGEN:  Macro variable START_TIME resolves to 2109868399.5
+375        END_TIME=datetime();
+376        
+377        DURATION_SECONDS=
+378        END_TIME-START_TIME;
+379        
+380        format START_TIME datetime19.;
+381        format END_TIME datetime19.;
+382        
+383        run;
+
+NOTE: The data set BANK.V5_EXECUTION_AUDIT has 1 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              518.15k
+      OS Memory           25508.00k
+      Timestamp           11/09/2026 01:03:20 PM
+      Step Count                        38  Switch Count  1
+      Page Faults                       0
+      Page Reclaims                     87
+      Page Swaps                        0
+      Voluntary Context Switches        41
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+384        
+385        /****************************************************************************/
+386        /* COMPLETION MESSAGE                                                       */
+387        /****************************************************************************/
+388        
+389        data _null_;
+390        
+391        START=&START_TIME.;
+SYMBOLGEN:  Macro variable START_TIME resolves to 2109868399.5
+392        FINISH=datetime();
+393        DURATION=FINISH-START;
+394        
+395        put "======================================================";
+396        put "MODULE COMPLETED : 07_ECL_Calculation";
+397        put "START TIME       : " START datetime19.;
+                                                           The SAS System
+
+398        put "END TIME         : " FINISH datetime19.;
+399        put "DURATION         : " DURATION comma12.2;
+400        put "======================================================";
+401        
+402        run;
+
+======================================================
+MODULE COMPLETED : 07_ECL_Calculation
+START TIME       :  09NOV2026:18:33:20
+END TIME         :  09NOV2026:18:33:21
+DURATION         :         1.21
+======================================================
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              345.93k
+      OS Memory           25248.00k
+      Timestamp           11/09/2026 01:03:20 PM
+      Step Count                        39  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     23
+      Page Swaps                        0
+      Voluntary Context Switches        0
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+403        
+404        /****************************************************************************/
+405        /* RESET LOGGING                                                            */
+406        /****************************************************************************/
+407        
+408        proc printto;
+409        run;
+

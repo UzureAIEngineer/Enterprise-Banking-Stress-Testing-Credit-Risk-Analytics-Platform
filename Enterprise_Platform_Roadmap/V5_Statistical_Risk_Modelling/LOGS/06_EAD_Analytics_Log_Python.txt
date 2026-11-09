@@ -1,0 +1,27 @@
+2026-11-09 12:37:41,047 | INFO | ================================================
+2026-11-09 12:37:41,047 | INFO | MODULE 06 EAD ANALYTICS STARTED
+2026-11-09 12:37:41,047 | INFO | ================================================
+2026-11-09 12:37:42,564 | INFO | Records Loaded : 200,000
+2026-11-09 12:37:42,564 | INFO | Dataset Validation Successful
+2026-11-09 17:42:23,167 | INFO | ================================================
+2026-11-09 17:42:23,167 | INFO | MODULE 06 EAD ANALYTICS STARTED
+2026-11-09 17:42:23,167 | INFO | ================================================
+2026-11-09 17:42:23,703 | INFO | Records Loaded : 200,000
+2026-11-09 17:42:23,703 | INFO | Dataset Validation Successful
+2026-11-09 18:13:55,272 | INFO | ================================================
+2026-11-09 18:13:55,273 | INFO | MODULE 06 EAD ANALYTICS STARTED
+2026-11-09 18:13:55,273 | INFO | ================================================
+2026-11-09 18:13:55,702 | INFO | Records Loaded : 200,000
+2026-11-09 18:13:55,702 | INFO | Dataset Validation Successful
+2026-11-09 18:13:55,704 | INFO | STEP 1 COMPLETE
+2026-11-09 18:13:55,704 | INFO | Starting EAD Calculations
+2026-11-09 18:13:55,706 | INFO | Columns Found: ['CUSTOMER_ID', 'LOAN_ID', 'PORTFOLIO_TYPE', 'PRODUCT_TYPE', 'REGION', 'CREDIT_SCORE', 'ANNUAL_INCOME', 'LOAN_AMOUNT', 'OUTSTANDING_BALANCE', 'LTV', 'DTI', 'YEARS_ON_BOOK', 'DELINQUENCY_BUCKET', 'GDP_GROWTH_RATE', 'UNEMPLOYMENT_RATE', 'INTEREST_RATE', 'PD', 'LGD', 'EAD', 'OBSERVED_DEFAULT', 'CREDIT_SCORE_BAND', 'EXPOSURE_BAND', 'LTV_BAND', 'DTI_BAND', 'PD_BAND', 'LGD_BAND', 'RISK_SCORE', 'RISK_GRADE']
+2026-11-09 18:13:55,708 | INFO | Utilization Ratio Completed
+2026-11-09 18:13:55,719 | INFO | CCF Completed
+2026-11-09 18:13:55,721 | INFO | Adjusted EAD Completed
+2026-11-09 18:13:56,114 | INFO | Summary Dataset Completed
+2026-11-09 18:14:01,432 | INFO | PDF Report Generated
+2026-11-09 18:14:01,455 | INFO | HTML Report Generated
+2026-11-09 18:14:02,054 | INFO | ======================================
+2026-11-09 18:14:02,054 | INFO | MODULE COMPLETED SUCCESSFULLY
+2026-11-09 18:14:02,054 | INFO | ======================================

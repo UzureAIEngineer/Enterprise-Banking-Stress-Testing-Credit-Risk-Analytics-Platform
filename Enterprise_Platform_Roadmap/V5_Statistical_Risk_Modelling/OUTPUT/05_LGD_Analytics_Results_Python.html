@@ -1,0 +1,547 @@
+<h1>Loss Given Default Analytics</h1><h2>LGD Analytics Summary</h2><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>RISK_SEGMENT</th>
+      <th>RISK_GRADE</th>
+      <th>PORTFOLIO_TYPE</th>
+      <th>ACCOUNT_COUNT</th>
+      <th>AVG_LGD</th>
+      <th>MIN_LGD</th>
+      <th>MAX_LGD</th>
+      <th>AVG_RISK_SCORE</th>
+      <th>TOTAL_EAD</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>RETAIL</td>
+      <td>19014</td>
+      <td>0.579595</td>
+      <td>0.2121</td>
+      <td>0.7000</td>
+      <td>38.591418</td>
+      <td>57627476600</td>
+    </tr>
+    <tr>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>WHOLESALE</td>
+      <td>19054</td>
+      <td>0.580965</td>
+      <td>0.2168</td>
+      <td>0.7000</td>
+      <td>38.604121</td>
+      <td>58146684900</td>
+    </tr>
+    <tr>
+      <td>LOW RISK</td>
+      <td>A</td>
+      <td>RETAIL</td>
+      <td>15606</td>
+      <td>0.109952</td>
+      <td>0.0000</td>
+      <td>0.4571</td>
+      <td>16.754253</td>
+      <td>47240081700</td>
+    </tr>
+    <tr>
+      <td>LOW RISK</td>
+      <td>A</td>
+      <td>WHOLESALE</td>
+      <td>15697</td>
+      <td>0.108577</td>
+      <td>0.0000</td>
+      <td>0.4550</td>
+      <td>16.727032</td>
+      <td>47175941700</td>
+    </tr>
+    <tr>
+      <td>MODERATE RISK</td>
+      <td>B</td>
+      <td>RETAIL</td>
+      <td>65380</td>
+      <td>0.339053</td>
+      <td>0.0000</td>
+      <td>0.7000</td>
+      <td>27.586343</td>
+      <td>198305021100</td>
+    </tr>
+    <tr>
+      <td>MODERATE RISK</td>
+      <td>B</td>
+      <td>WHOLESALE</td>
+      <td>65249</td>
+      <td>0.340859</td>
+      <td>0.0000</td>
+      <td>0.7000</td>
+      <td>27.623442</td>
+      <td>196969485600</td>
+    </tr>
+  </tbody>
+</table><h2>LGD By Risk Segment</h2><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>count</th>
+      <th>mean</th>
+      <th>min</th>
+      <th>median</th>
+      <th>max</th>
+    </tr>
+    <tr>
+      <th>RISK_SEGMENT</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>HIGH RISK</th>
+      <td>38068</td>
+      <td>0.580281</td>
+      <td>0.2121</td>
+      <td>0.6002</td>
+      <td>0.7000</td>
+    </tr>
+    <tr>
+      <th>LOW RISK</th>
+      <td>31303</td>
+      <td>0.109263</td>
+      <td>0.0000</td>
+      <td>0.0904</td>
+      <td>0.4571</td>
+    </tr>
+    <tr>
+      <th>MODERATE RISK</th>
+      <td>130629</td>
+      <td>0.339955</td>
+      <td>0.0000</td>
+      <td>0.3379</td>
+      <td>0.7000</td>
+    </tr>
+  </tbody>
+</table><h2>LGD By Portfolio Type</h2><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>count</th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+    </tr>
+    <tr>
+      <th>PORTFOLIO_TYPE</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>RETAIL</th>
+      <td>100000</td>
+      <td>0.349036</td>
+      <td>0.0</td>
+      <td>0.7</td>
+    </tr>
+    <tr>
+      <th>WHOLESALE</th>
+      <td>100000</td>
+      <td>0.350148</td>
+      <td>0.0</td>
+      <td>0.7</td>
+    </tr>
+  </tbody>
+</table><h2>LGD By Product Type</h2><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>count</th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+    </tr>
+    <tr>
+      <th>PRODUCT_TYPE</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Auto Loan</th>
+      <td>25133</td>
+      <td>0.349648</td>
+      <td>0.0000</td>
+      <td>0.7000</td>
+    </tr>
+    <tr>
+      <th>Corporate Loan</th>
+      <td>24989</td>
+      <td>0.349581</td>
+      <td>0.0000</td>
+      <td>0.7000</td>
+    </tr>
+    <tr>
+      <th>Credit Card</th>
+      <td>24944</td>
+      <td>0.347119</td>
+      <td>0.0001</td>
+      <td>0.7000</td>
+    </tr>
+    <tr>
+      <th>Mortgage</th>
+      <td>24903</td>
+      <td>0.349336</td>
+      <td>0.0000</td>
+      <td>0.6999</td>
+    </tr>
+    <tr>
+      <th>Personal Loan</th>
+      <td>25020</td>
+      <td>0.350035</td>
+      <td>0.0000</td>
+      <td>0.7000</td>
+    </tr>
+    <tr>
+      <th>Project Finance</th>
+      <td>24983</td>
+      <td>0.350039</td>
+      <td>0.0000</td>
+      <td>0.6999</td>
+    </tr>
+    <tr>
+      <th>SME Loan</th>
+      <td>24896</td>
+      <td>0.352105</td>
+      <td>0.0000</td>
+      <td>0.7000</td>
+    </tr>
+    <tr>
+      <th>Trade Finance</th>
+      <td>25132</td>
+      <td>0.348880</td>
+      <td>0.0000</td>
+      <td>0.7000</td>
+    </tr>
+  </tbody>
+</table><h2>LGD By Region</h2><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>count</th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+    </tr>
+    <tr>
+      <th>REGION</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Central</th>
+      <td>40017</td>
+      <td>0.349641</td>
+      <td>0.0</td>
+      <td>0.7</td>
+    </tr>
+    <tr>
+      <th>East</th>
+      <td>40279</td>
+      <td>0.348135</td>
+      <td>0.0</td>
+      <td>0.7</td>
+    </tr>
+    <tr>
+      <th>North</th>
+      <td>40015</td>
+      <td>0.349460</td>
+      <td>0.0</td>
+      <td>0.7</td>
+    </tr>
+    <tr>
+      <th>South</th>
+      <td>39934</td>
+      <td>0.351106</td>
+      <td>0.0</td>
+      <td>0.7</td>
+    </tr>
+    <tr>
+      <th>West</th>
+      <td>39755</td>
+      <td>0.349630</td>
+      <td>0.0</td>
+      <td>0.7</td>
+    </tr>
+  </tbody>
+</table><h2>Top 20 LGD Accounts</h2><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>CUSTOMER_ID</th>
+      <th>LOAN_ID</th>
+      <th>PORTFOLIO_TYPE</th>
+      <th>PRODUCT_TYPE</th>
+      <th>RISK_SEGMENT</th>
+      <th>RISK_GRADE</th>
+      <th>LGD</th>
+      <th>PD</th>
+      <th>EAD</th>
+      <th>RISK_SCORE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>CUST00124692</td>
+      <td>LOAN00124692</td>
+      <td>WHOLESALE</td>
+      <td>Trade Finance</td>
+      <td>MODERATE RISK</td>
+      <td>B</td>
+      <td>0.7000</td>
+      <td>0.0643</td>
+      <td>396700</td>
+      <td>31.31</td>
+    </tr>
+    <tr>
+      <td>CUST00036184</td>
+      <td>LOAN00036184</td>
+      <td>RETAIL</td>
+      <td>Auto Loan</td>
+      <td>MODERATE RISK</td>
+      <td>B</td>
+      <td>0.7000</td>
+      <td>0.0402</td>
+      <td>1487900</td>
+      <td>33.71</td>
+    </tr>
+    <tr>
+      <td>CUST00056820</td>
+      <td>LOAN00056820</td>
+      <td>RETAIL</td>
+      <td>Credit Card</td>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>0.7000</td>
+      <td>0.1482</td>
+      <td>1251200</td>
+      <td>42.15</td>
+    </tr>
+    <tr>
+      <td>CUST00050173</td>
+      <td>LOAN00050173</td>
+      <td>RETAIL</td>
+      <td>Auto Loan</td>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>0.7000</td>
+      <td>0.1920</td>
+      <td>388200</td>
+      <td>44.18</td>
+    </tr>
+    <tr>
+      <td>CUST00119960</td>
+      <td>LOAN00119960</td>
+      <td>WHOLESALE</td>
+      <td>Corporate Loan</td>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>0.7000</td>
+      <td>0.1245</td>
+      <td>3625200</td>
+      <td>38.69</td>
+    </tr>
+    <tr>
+      <td>CUST00132830</td>
+      <td>LOAN00132830</td>
+      <td>WHOLESALE</td>
+      <td>Trade Finance</td>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>0.7000</td>
+      <td>0.1232</td>
+      <td>1589500</td>
+      <td>37.94</td>
+    </tr>
+    <tr>
+      <td>CUST00098919</td>
+      <td>LOAN00098919</td>
+      <td>RETAIL</td>
+      <td>Auto Loan</td>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>0.7000</td>
+      <td>0.0244</td>
+      <td>199800</td>
+      <td>35.02</td>
+    </tr>
+    <tr>
+      <td>CUST00046295</td>
+      <td>LOAN00046295</td>
+      <td>RETAIL</td>
+      <td>Auto Loan</td>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>0.7000</td>
+      <td>0.1097</td>
+      <td>1437600</td>
+      <td>35.84</td>
+    </tr>
+    <tr>
+      <td>CUST00111256</td>
+      <td>LOAN00111256</td>
+      <td>WHOLESALE</td>
+      <td>SME Loan</td>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>0.7000</td>
+      <td>0.1581</td>
+      <td>7518700</td>
+      <td>39.89</td>
+    </tr>
+    <tr>
+      <td>CUST00120590</td>
+      <td>LOAN00120590</td>
+      <td>WHOLESALE</td>
+      <td>Corporate Loan</td>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>0.7000</td>
+      <td>0.0571</td>
+      <td>4883300</td>
+      <td>41.62</td>
+    </tr>
+    <tr>
+      <td>CUST00010688</td>
+      <td>LOAN00010688</td>
+      <td>RETAIL</td>
+      <td>Personal Loan</td>
+      <td>MODERATE RISK</td>
+      <td>B</td>
+      <td>0.7000</td>
+      <td>0.0977</td>
+      <td>2485200</td>
+      <td>32.96</td>
+    </tr>
+    <tr>
+      <td>CUST00038021</td>
+      <td>LOAN00038021</td>
+      <td>RETAIL</td>
+      <td>Personal Loan</td>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>0.7000</td>
+      <td>0.1781</td>
+      <td>2678100</td>
+      <td>42.92</td>
+    </tr>
+    <tr>
+      <td>CUST00115700</td>
+      <td>LOAN00115700</td>
+      <td>WHOLESALE</td>
+      <td>Corporate Loan</td>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>0.7000</td>
+      <td>0.0059</td>
+      <td>1696000</td>
+      <td>38.14</td>
+    </tr>
+    <tr>
+      <td>CUST00135428</td>
+      <td>LOAN00135428</td>
+      <td>WHOLESALE</td>
+      <td>Corporate Loan</td>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>0.7000</td>
+      <td>0.0494</td>
+      <td>5124400</td>
+      <td>41.12</td>
+    </tr>
+    <tr>
+      <td>CUST00170587</td>
+      <td>LOAN00170587</td>
+      <td>WHOLESALE</td>
+      <td>SME Loan</td>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>0.7000</td>
+      <td>0.0224</td>
+      <td>4652300</td>
+      <td>42.69</td>
+    </tr>
+    <tr>
+      <td>CUST00031241</td>
+      <td>LOAN00031241</td>
+      <td>RETAIL</td>
+      <td>Credit Card</td>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>0.6999</td>
+      <td>0.1774</td>
+      <td>715900</td>
+      <td>47.79</td>
+    </tr>
+    <tr>
+      <td>CUST00175671</td>
+      <td>LOAN00175671</td>
+      <td>WHOLESALE</td>
+      <td>Corporate Loan</td>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>0.6999</td>
+      <td>0.1954</td>
+      <td>2947700</td>
+      <td>38.43</td>
+    </tr>
+    <tr>
+      <td>CUST00137857</td>
+      <td>LOAN00137857</td>
+      <td>WHOLESALE</td>
+      <td>SME Loan</td>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>0.6999</td>
+      <td>0.0834</td>
+      <td>1513600</td>
+      <td>35.47</td>
+    </tr>
+    <tr>
+      <td>CUST00047870</td>
+      <td>LOAN00047870</td>
+      <td>RETAIL</td>
+      <td>Auto Loan</td>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>0.6999</td>
+      <td>0.0420</td>
+      <td>2326000</td>
+      <td>37.24</td>
+    </tr>
+    <tr>
+      <td>CUST00180715</td>
+      <td>LOAN00180715</td>
+      <td>WHOLESALE</td>
+      <td>Project Finance</td>
+      <td>HIGH RISK</td>
+      <td>C</td>
+      <td>0.6999</td>
+      <td>0.1870</td>
+      <td>5321500</td>
+      <td>40.71</td>
+    </tr>
+  </tbody>
+</table>

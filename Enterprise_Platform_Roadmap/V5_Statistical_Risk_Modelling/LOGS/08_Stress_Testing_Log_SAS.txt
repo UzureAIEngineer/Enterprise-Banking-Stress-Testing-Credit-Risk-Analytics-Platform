@@ -1,0 +1,572 @@
+NOTE: PROCEDURE PRINTTO used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              272.75k
+      OS Memory           23456.00k
+      Timestamp           11/09/2026 01:34:25 PM
+      Step Count                        47  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     16
+      Page Swaps                        0
+      Voluntary Context Switches        8
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+109        
+110        /****************************************************************************/
+111        /* VALIDATION                                                               */
+112        /****************************************************************************/
+113        
+114        %if not %sysfunc(exist(BANK.ECL_ANALYTICS_RESULTS))
+115        %then %do;
+116        
+117            %put ERROR: ECL_ANALYTICS_RESULTS NOT FOUND.;
+118            %abort cancel;
+119        
+120        %end;
+121        
+122        /****************************************************************************/
+123        /* LOAD INPUT                                                               */
+124        /****************************************************************************/
+125        
+126        data WORK.INPUT_ECL;
+127        
+128            set BANK.ECL_ANALYTICS_RESULTS;
+129        
+130        run;
+
+NOTE: There were 200000 observations read from the data set BANK.ECL_ANALYTICS_RESULTS.
+NOTE: The data set WORK.INPUT_ECL has 200000 observations and 41 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.11 seconds
+                                                           The SAS System
+
+      user cpu time       0.03 seconds
+      system cpu time     0.06 seconds
+      memory              3492.90k
+      OS Memory           26536.00k
+      Timestamp           11/09/2026 01:34:25 PM
+      Step Count                        48  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     532
+      Page Swaps                        0
+      Voluntary Context Switches        566
+      Involuntary Context Switches      11
+      Block Input Operations            0
+      Block Output Operations           200968
+      
+
+131        
+132        /****************************************************************************/
+133        /* BASELINE SCENARIO                                                        */
+134        /****************************************************************************/
+135        
+136        data BASELINE;
+137        
+138            set WORK.INPUT_ECL;
+139        
+140            SCENARIO="BASELINE";
+141        
+142            STRESS_PD = PD;
+143            STRESS_LGD = LGD;
+144            STRESS_EAD = ADJUSTED_EAD;
+145        
+146            STRESS_ECL=
+147                STRESS_PD*
+148                STRESS_LGD*
+149                STRESS_EAD;
+150        
+151        run;
+
+NOTE: There were 200000 observations read from the data set WORK.INPUT_ECL.
+NOTE: The data set WORK.BASELINE has 200000 observations and 46 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.08 seconds
+      user cpu time       0.02 seconds
+      system cpu time     0.07 seconds
+      memory              3496.37k
+      OS Memory           26536.00k
+      Timestamp           11/09/2026 01:34:25 PM
+      Step Count                        49  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     553
+      Page Swaps                        0
+      Voluntary Context Switches        11
+      Involuntary Context Switches      2
+      Block Input Operations            0
+      Block Output Operations           216072
+      
+
+152        
+153        /****************************************************************************/
+                                                           The SAS System
+
+154        /* ADVERSE SCENARIO                                                         */
+155        /****************************************************************************/
+156        
+157        data ADVERSE;
+158        
+159            set WORK.INPUT_ECL;
+160        
+161            SCENARIO="ADVERSE";
+162        
+163            STRESS_PD=PD*1.25;
+164            STRESS_LGD=LGD*1.10;
+165            STRESS_EAD=ADJUSTED_EAD*1.05;
+166        
+167            STRESS_ECL=
+168                STRESS_PD*
+169                STRESS_LGD*
+170                STRESS_EAD;
+171        
+172        run;
+
+NOTE: There were 200000 observations read from the data set WORK.INPUT_ECL.
+NOTE: The data set WORK.ADVERSE has 200000 observations and 46 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.08 seconds
+      user cpu time       0.03 seconds
+      system cpu time     0.06 seconds
+      memory              3498.12k
+      OS Memory           26536.00k
+      Timestamp           11/09/2026 01:34:25 PM
+      Step Count                        50  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     528
+      Page Swaps                        0
+      Voluntary Context Switches        12
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           216072
+      
+
+173        
+174        /****************************************************************************/
+175        /* SEVERE SCENARIO                                                          */
+176        /****************************************************************************/
+177        
+178        data SEVERE;
+179        
+180            set WORK.INPUT_ECL;
+181        
+182            SCENARIO="SEVERE";
+183        
+184            STRESS_PD=PD*1.50;
+185            STRESS_LGD=LGD*1.20;
+186            STRESS_EAD=ADJUSTED_EAD*1.10;
+187        
+188            STRESS_ECL=
+189                STRESS_PD*
+190                STRESS_LGD*
+191                STRESS_EAD;
+                                                           The SAS System
+
+192        
+193        run;
+
+NOTE: There were 200000 observations read from the data set WORK.INPUT_ECL.
+NOTE: The data set WORK.SEVERE has 200000 observations and 46 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.08 seconds
+      user cpu time       0.02 seconds
+      system cpu time     0.06 seconds
+      memory              3499.21k
+      OS Memory           26536.00k
+      Timestamp           11/09/2026 01:34:26 PM
+      Step Count                        51  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     529
+      Page Swaps                        0
+      Voluntary Context Switches        11
+      Involuntary Context Switches      1
+      Block Input Operations            0
+      Block Output Operations           216080
+      
+
+194        
+195        /****************************************************************************/
+196        /* CONSOLIDATE SCENARIOS                                                    */
+197        /****************************************************************************/
+198        
+199        data BANK.STRESS_TEST_RESULTS;
+200        
+201            set BASELINE
+202                ADVERSE
+203                SEVERE;
+204        
+205        run;
+
+NOTE: There were 200000 observations read from the data set WORK.BASELINE.
+NOTE: There were 200000 observations read from the data set WORK.ADVERSE.
+NOTE: There were 200000 observations read from the data set WORK.SEVERE.
+NOTE: The data set BANK.STRESS_TEST_RESULTS has 600000 observations and 46 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.82 seconds
+      user cpu time       0.06 seconds
+      system cpu time     0.25 seconds
+      memory              6797.75k
+      OS Memory           30640.00k
+      Timestamp           11/09/2026 01:34:26 PM
+      Step Count                        52  Switch Count  1
+      Page Faults                       0
+      Page Reclaims                     1261
+      Page Swaps                        0
+      Voluntary Context Switches        8764
+      Involuntary Context Switches      5
+      Block Input Operations            0
+      Block Output Operations           648464
+      
+
+206        
+207        /****************************************************************************/
+                                                           The SAS System
+
+208        /* SUMMARY                                                                  */
+209        /****************************************************************************/
+210        
+211        proc sql;
+212        
+213        create table BANK.STRESS_TEST_SUMMARY as
+214        
+215        select
+216        
+217        SCENARIO,
+218        
+219        count(*) as ACCOUNT_COUNT,
+220        
+221        sum(STRESS_ECL)
+222        format=comma20.2
+223        as TOTAL_ECL,
+224        
+225        avg(STRESS_ECL)
+226        format=comma20.2
+227        as AVG_ECL
+228        
+229        from BANK.STRESS_TEST_RESULTS
+230        
+231        group by SCENARIO;
+NOTE: Table BANK.STRESS_TEST_SUMMARY created, with 3 rows and 4 columns.
+
+232        
+233        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.40 seconds
+      user cpu time       0.17 seconds
+      system cpu time     0.14 seconds
+      memory              29384.40k
+      OS Memory           50912.00k
+      Timestamp           11/09/2026 01:34:27 PM
+      Step Count                        53  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     6524
+      Page Swaps                        0
+      Voluntary Context Switches        3660
+      Involuntary Context Switches      20
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+234        
+235        /****************************************************************************/
+236        /* PORTFOLIO METRICS                                                        */
+237        /****************************************************************************/
+238        
+239        proc sql;
+240        
+241        create table BANK.STRESS_TEST_PORTFOLIO as
+242        
+243        select
+244        
+245        SCENARIO,
+246        
+                                                           The SAS System
+
+247        sum(STRESS_ECL)
+248        format=comma20.2
+249        as PORTFOLIO_ECL,
+250        
+251        min(STRESS_ECL)
+252        format=comma20.2
+253        as MIN_ECL,
+254        
+255        avg(STRESS_ECL)
+256        format=comma20.2
+257        as AVG_ECL,
+258        
+259        max(STRESS_ECL)
+260        format=comma20.2
+261        as MAX_ECL
+262        
+263        from BANK.STRESS_TEST_RESULTS
+264        
+265        group by SCENARIO;
+NOTE: Table BANK.STRESS_TEST_PORTFOLIO created, with 3 rows and 5 columns.
+
+266        
+267        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.13 seconds
+      user cpu time       0.13 seconds
+      system cpu time     0.07 seconds
+      memory              28827.15k
+      OS Memory           50656.00k
+      Timestamp           11/09/2026 01:34:27 PM
+      Step Count                        54  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     6355
+      Page Swaps                        0
+      Voluntary Context Switches        351
+      Involuntary Context Switches      2
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+268        
+269        /****************************************************************************/
+270        /* AUDIT                                                                    */
+271        /****************************************************************************/
+272        
+273        proc sql;
+274        
+275        create table BANK.STRESS_TEST_AUDIT as
+276        
+277        select
+278        
+279        count(*) as TOTAL_RECORDS,
+280        
+281        sum(missing(STRESS_ECL))
+282        as MISSING_ECL,
+283        
+284        min(STRESS_ECL)
+285        as MIN_STRESS_ECL,
+                                                           The SAS System
+
+286        
+287        max(STRESS_ECL)
+288        as MAX_STRESS_ECL
+289        
+290        from BANK.STRESS_TEST_RESULTS;
+NOTE: Table BANK.STRESS_TEST_AUDIT created, with 1 rows and 4 columns.
+
+291        
+292        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.13 seconds
+      user cpu time       0.08 seconds
+      system cpu time     0.05 seconds
+      memory              6865.00k
+      OS Memory           30632.00k
+      Timestamp           11/09/2026 01:34:27 PM
+      Step Count                        55  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     306
+      Page Swaps                        0
+      Voluntary Context Switches        32
+      Involuntary Context Switches      2
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+293        
+294        /****************************************************************************/
+295        /* HTML REPORT                                                              */
+296        /****************************************************************************/
+297        
+298        ods html
+299        file="&OUTPUT_PATH./08_Stress_Testing_Results_SAS.html"
+SYMBOLGEN:  Macro variable OUTPUT_PATH resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT
+300        style=statistical;
+NOTE: Writing HTML Body file: 
+      /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/08_Stress_Testing_Results_SAS.html
+301        
+302        title "Module 08 - Stress Testing Results";
+303        
+304        proc print data=BANK.STRESS_TEST_SUMMARY;
+305        run;
+
+NOTE: There were 3 observations read from the data set BANK.STRESS_TEST_SUMMARY.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              2145.21k
+      OS Memory           28580.00k
+      Timestamp           11/09/2026 01:34:27 PM
+      Step Count                        56  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     376
+      Page Swaps                        0
+      Voluntary Context Switches        10
+      Involuntary Context Switches      0
+      Block Input Operations            0
+                                                           The SAS System
+
+      Block Output Operations           88
+      
+
+306        
+307        proc print data=BANK.STRESS_TEST_PORTFOLIO;
+308        run;
+
+NOTE: There were 3 observations read from the data set BANK.STRESS_TEST_PORTFOLIO.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              554.00k
+      OS Memory           28580.00k
+      Timestamp           11/09/2026 01:34:27 PM
+      Step Count                        57  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     101
+      Page Swaps                        0
+      Voluntary Context Switches        11
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+309        
+310        ods html close;
+311        
+312        /****************************************************************************/
+313        /* PDF REPORT                                                               */
+314        /****************************************************************************/
+315        
+316        ods pdf
+317        file="&OUTPUT_PATH./08_Stress_Testing_Results_SAS.pdf";
+SYMBOLGEN:  Macro variable OUTPUT_PATH resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT
+NOTE: Writing ODS PDF output to DISK destination 
+      "/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/08_Stress_Testing_Results_SAS.pdf", 
+      printer "PDF".
+318        
+319        title "Module 08 - Stress Testing Results";
+320        
+321        proc print data=BANK.STRESS_TEST_SUMMARY;
+322        run;
+
+NOTE: There were 3 observations read from the data set BANK.STRESS_TEST_SUMMARY.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              1290.25k
+      OS Memory           27560.00k
+      Timestamp           11/09/2026 01:34:27 PM
+      Step Count                        58  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     199
+      Page Swaps                        0
+      Voluntary Context Switches        7
+      Involuntary Context Switches      0
+                                                           The SAS System
+
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+323        
+324        proc print data=BANK.STRESS_TEST_PORTFOLIO;
+325        run;
+
+NOTE: There were 3 observations read from the data set BANK.STRESS_TEST_PORTFOLIO.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              540.18k
+      OS Memory           27560.00k
+      Timestamp           11/09/2026 01:34:27 PM
+      Step Count                        59  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     79
+      Page Swaps                        0
+      Voluntary Context Switches        7
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+326        
+327        proc means
+328        data=BANK.STRESS_TEST_RESULTS
+329        n mean min max sum;
+330        var STRESS_ECL;
+331        run;
+
+NOTE: There were 600000 observations read from the data set BANK.STRESS_TEST_RESULTS.
+NOTE: PROCEDURE MEANS used (Total process time):
+      real time           0.07 seconds
+      user cpu time       0.04 seconds
+      system cpu time     0.05 seconds
+      memory              8510.34k
+      OS Memory           34764.00k
+      Timestamp           11/09/2026 01:34:27 PM
+      Step Count                        60  Switch Count  27
+      Page Faults                       0
+      Page Reclaims                     1929
+      Page Swaps                        0
+      Voluntary Context Switches        162
+      Involuntary Context Switches      2
+      Block Input Operations            0
+      Block Output Operations           8
+      
+
+332        
+333        ods pdf close;
+NOTE: ODS PDF printed 3 pages to 
+      /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/08_Stress_Testing_Results_SAS.pdf.
+334        
+335        /****************************************************************************/
+336        /* EXECUTION AUDIT                                                          */
+                                                           The SAS System
+
+337        /****************************************************************************/
+338        
+339        data BANK.V5_EXECUTION_AUDIT;
+340        
+341        length MODULE_NAME $100;
+342        
+343        MODULE_NAME="08_Stress_Testing";
+344        
+345        START_TIME=&START_TIME.;
+SYMBOLGEN:  Macro variable START_TIME resolves to 2109870265.7
+346        END_TIME=datetime();
+347        
+348        DURATION_SECONDS=
+349        END_TIME-START_TIME;
+350        
+351        format START_TIME datetime19.;
+352        format END_TIME datetime19.;
+353        
+354        run;
+
+NOTE: The data set BANK.V5_EXECUTION_AUDIT has 1 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              518.71k
+      OS Memory           26020.00k
+      Timestamp           11/09/2026 01:34:27 PM
+      Step Count                        61  Switch Count  1
+      Page Faults                       0
+      Page Reclaims                     87
+      Page Swaps                        0
+      Voluntary Context Switches        37
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+355        
+356        /****************************************************************************/
+357        /* RESET LOGGING                                                            */
+358        /****************************************************************************/
+359        
+360        proc printto;
+361        run;
+
