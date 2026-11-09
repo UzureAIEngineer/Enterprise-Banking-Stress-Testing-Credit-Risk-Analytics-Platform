@@ -24,15 +24,6 @@ This project demonstrates an end-to-end credit risk modelling framework covering
 
 Current Progress: 8/10 Modules Complete (80%)
 
-- Probability of Default (PD) Analytics
-- Loss Given Default (LGD) Analytics
-- Exposure at Default (EAD) Analysis
-- Expected Credit Loss (ECL) Forecasting
-- Portfolio Risk Segmentation
-- Credit Risk Stress Testing
-- Executive Risk Reporting
-- SAS to Python Migration Benchmarking
-
 ---
 
 ## Technology Stack
