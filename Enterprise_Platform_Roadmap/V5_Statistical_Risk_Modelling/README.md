@@ -1,35 +1,28 @@
 # V5 Statistical Risk Modelling
 
 
-## Current Progress
+## Project Overview
 
 
-✅ Module 01 Enterprise Portfolio Generator
-
-✅ Module 02 Risk Feature Engineering
-
-✅ Module 03 Risk Segmentation
-
-✅ Module 04 Probability of Default (PD) Analytics
-
-✅ Module 05 Loss Given Default (LGD) Analytics
-
-✅ Module 06 Exposure at Default (EAD) Analytics
-
-✅ Module 07 Expected Credit Loss (ECL) Calculation
-
-✅ Module 08 Stress Testing & Scenario Analysis
+Enterprise Banking Stress Testing and Credit Risk Analytics Platform built using SAS and Python.
 
 
-🚧 Module 09 Executive Risk Dashboard
+This project demonstrates an end-to-end credit risk modelling framework covering:
 
-🚧 Module 10 SAS vs Python Benchmarking
 
----
+- Portfolio Generation
+- Feature Engineering
+- Risk Segmentation
+- Probability of Default (PD)
+- Loss Given Default (LGD)
+- Exposure at Default (EAD)
+- Expected Credit Loss (ECL)
+- Stress Testing & Scenario Analysis
+- Executive Risk Dashboard
+- SAS vs Python Benchmarking
 
-## Project Objective
 
-Build an end-to-end Enterprise Banking Statistical Risk Modelling Platform covering:
+Current Progress: 8/10 Modules Complete (80%)
 
 - Probability of Default (PD) Analytics
 - Loss Given Default (LGD) Analytics
@@ -145,110 +138,8 @@ Risk Segments:
 
 ---
 
-## Completed Modules
-
-### Module 01 — Enterprise Portfolio Generator
-
-**Status:** ✅ Completed
-
-Deliverables:
-
-- SAS Implementation
-- Python Implementation
-- Jupyter Notebook
-- 200K Enterprise Portfolio Dataset
-- Execution Logs
-- PDF Evidence
-- HTML Evidence
-- Audit Framework
-
----
-
-### Module 02 — Risk Feature Engineering
-
-**Status:** ✅ Completed
-
-Deliverables:
-
-- Credit Score Banding
-- Exposure Banding
-- LTV Banding
-- DTI Banding
-- PD Banding
-- LGD Banding
-- Composite Risk Score
-- Risk Grade Framework
-
-Outputs:
-
-- enterprise_portfolio_enriched
-- HTML Evidence
-- PDF Evidence
-- Execution Logs
-
----
-
-### Module 03 — Risk Segmentation
-
-**Status:** ✅ Completed
-
-Deliverables:
-
-- Risk Segmentation Framework
-- Segment Ranking
-- Segment Analytics
-- High Risk Account Analysis
-
-Outputs:
-
-- risk_segmentation
-- HTML Evidence
-- PDF Evidence
-- Execution Logs
-
----
-
-### Module 04 — Probability of Default (PD) Analytics
-
-**Status:** ✅ Completed
-
-Deliverables:
-
-- PD Segmentation Analysis
-- PD by Portfolio Type
-- PD by Product Type
-- PD by Region
-- Top PD Exposure Analysis
-
-Outputs:
-
-- pd_analytics_results
-- HTML Evidence
-- PDF Evidence
-- Execution Logs
 
 
-
-# V5 Statistical Risk Modelling
-
-## Project Overview
-
-Enterprise Banking Stress Testing and Credit Risk Analytics Platform built using SAS and Python.
-
-This project demonstrates an end-to-end credit risk modelling framework covering:
-
-- Portfolio Generation
-- Feature Engineering
-- Risk Segmentation
-- Probability of Default (PD)
-- Loss Given Default (LGD)
-- Exposure at Default (EAD)
-- Expected Credit Loss (ECL)
-- Stress Testing & Scenario Analysis
-- Executive Risk Dashboard
-- SAS vs Python Benchmarking
-
-Current Progress: 8/10 Modules Complete (80%)
 
 ------------------------------------------------------------------------------
 
