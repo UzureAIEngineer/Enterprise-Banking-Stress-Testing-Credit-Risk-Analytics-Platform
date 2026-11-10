@@ -1,9 +1,14 @@
 ==============================================================================
+
 MODULE 01
+
 ENTERPRISE PORTFOLIO GENERATOR
+
 ==============================================================================
 
+
 FRAMEWORK
+
 ---------
 
 Enterprise Risk Analytics & Regulatory Reporting Framework
