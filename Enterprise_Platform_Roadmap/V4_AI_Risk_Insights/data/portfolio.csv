@@ -1,0 +1,6 @@
+customer_id,credit_score,balance,product,
+1001,780,2500000,Mortgage,
+1002,690,900000,Auto Loan,
+1003,580,350000,Credit Card,
+1004,720,1500000,SME Loan,
+``,,,,

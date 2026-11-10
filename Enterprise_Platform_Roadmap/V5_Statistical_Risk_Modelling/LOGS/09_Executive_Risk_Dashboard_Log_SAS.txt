@@ -1,0 +1,512 @@
+NOTE: PROCEDURE PRINTTO used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              257.46k
+      OS Memory           19104.00k
+      Timestamp           11/10/2026 03:53:21 AM
+      Step Count                        24  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     20
+      Page Swaps                        0
+      Voluntary Context Switches        8
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+95         
+96         /***************************************************************************/
+97         /* PORTFOLIO KPI SUMMARY                                                   */
+98         /***************************************************************************/
+                                                           The SAS System
+
+99         
+100        proc sql;
+101        
+102        create table BANK.EXECUTIVE_DASHBOARD_SUMMARY as
+103        
+104        select
+105        
+106        count(*)                         as TOTAL_ACCOUNTS,
+107        sum(ECL_AMOUNT)                  as TOTAL_ECL format=comma20.2,
+108        avg(PD)                          as AVG_PD format=percent8.2,
+109        avg(LGD)                         as AVG_LGD format=percent8.2,
+110        avg(ADJUSTED_EAD)                as AVG_EAD format=comma20.2,
+111        sum(ADJUSTED_EAD)                as TOTAL_EAD format=comma20.2
+112        
+113        from BANK.ECL_ANALYTICS_RESULTS;
+NOTE: Table BANK.EXECUTIVE_DASHBOARD_SUMMARY created, with 1 rows and 6 columns.
+
+114        
+115        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.12 seconds
+      user cpu time       0.02 seconds
+      system cpu time     0.04 seconds
+      memory              6888.68k
+      OS Memory           26280.00k
+      Timestamp           11/10/2026 03:53:21 AM
+      Step Count                        25  Switch Count  2
+      Page Faults                       6
+      Page Reclaims                     508
+      Page Swaps                        0
+      Voluntary Context Switches        918
+      Involuntary Context Switches      8
+      Block Input Operations            1520
+      Block Output Operations           264
+      
+
+116        
+117        /***************************************************************************/
+118        /* PD DASHBOARD                                                            */
+119        /***************************************************************************/
+120        
+121        proc sql;
+122        
+123        create table PD_DASHBOARD as
+124        
+125        select
+126        
+127        RISK_GRADE,
+128        count(*) as ACCOUNT_COUNT,
+129        avg(PD)  as AVG_PD format=percent8.2
+130        
+131        from BANK.ECL_ANALYTICS_RESULTS
+132        
+133        group by RISK_GRADE;
+NOTE: Table WORK.PD_DASHBOARD created, with 3 rows and 3 columns.
+
+134        
+135        quit;
+                                                           The SAS System
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.06 seconds
+      user cpu time       0.08 seconds
+      system cpu time     0.03 seconds
+      memory              11899.92k
+      OS Memory           31680.00k
+      Timestamp           11/10/2026 03:53:21 AM
+      Step Count                        26  Switch Count  3
+      Page Faults                       4
+      Page Reclaims                     2527
+      Page Swaps                        0
+      Voluntary Context Switches        125
+      Involuntary Context Switches      3
+      Block Input Operations            2064
+      Block Output Operations           264
+      
+
+136        
+137        /***************************************************************************/
+138        /* LGD DASHBOARD                                                           */
+139        /***************************************************************************/
+140        
+141        proc sql;
+142        
+143        create table LGD_DASHBOARD as
+144        
+145        select
+146        
+147        RISK_GRADE,
+148        avg(LGD) as AVG_LGD format=percent8.2
+149        
+150        from BANK.ECL_ANALYTICS_RESULTS
+151        
+152        group by RISK_GRADE;
+NOTE: Table WORK.LGD_DASHBOARD created, with 3 rows and 2 columns.
+
+153        
+154        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.05 seconds
+      user cpu time       0.06 seconds
+      system cpu time     0.02 seconds
+      memory              11538.54k
+      OS Memory           31680.00k
+      Timestamp           11/10/2026 03:53:21 AM
+      Step Count                        27  Switch Count  3
+      Page Faults                       0
+      Page Reclaims                     2287
+      Page Swaps                        0
+      Voluntary Context Switches        126
+      Involuntary Context Switches      4
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+155        
+156        /***************************************************************************/
+157        /* ECL DASHBOARD                                                           */
+                                                           The SAS System
+
+158        /***************************************************************************/
+159        
+160        proc sql;
+161        
+162        create table ECL_DASHBOARD as
+163        
+164        select
+165        
+166        ECL_BAND,
+167        count(*) as ACCOUNTS,
+168        sum(ECL_AMOUNT) as TOTAL_ECL format=comma20.2
+169        
+170        from BANK.ECL_ANALYTICS_RESULTS
+171        
+172        group by ECL_BAND;
+NOTE: Table WORK.ECL_DASHBOARD created, with 4 rows and 3 columns.
+
+173        
+174        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.05 seconds
+      user cpu time       0.08 seconds
+      system cpu time     0.03 seconds
+      memory              17713.73k
+      OS Memory           37932.00k
+      Timestamp           11/10/2026 03:53:21 AM
+      Step Count                        28  Switch Count  3
+      Page Faults                       0
+      Page Reclaims                     3807
+      Page Swaps                        0
+      Voluntary Context Switches        227
+      Involuntary Context Switches      7
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+175        
+176        /***************************************************************************/
+177        /* STRESS TEST DASHBOARD                                                   */
+178        /***************************************************************************/
+179        
+180        data STRESS_DASHBOARD;
+181        
+182        set BANK.STRESS_TEST_SUMMARY;
+183        
+184        run;
+
+NOTE: There were 3 observations read from the data set BANK.STRESS_TEST_SUMMARY.
+NOTE: The data set WORK.STRESS_DASHBOARD has 3 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              796.62k
+      OS Memory           23464.00k
+      Timestamp           11/10/2026 03:53:21 AM
+      Step Count                        29  Switch Count  2
+      Page Faults                       1
+                                                           The SAS System
+
+      Page Reclaims                     130
+      Page Swaps                        0
+      Voluntary Context Switches        22
+      Involuntary Context Switches      0
+      Block Input Operations            64
+      Block Output Operations           272
+      
+
+185        
+186        /***************************************************************************/
+187        /* HTML REPORT                                                             */
+188        /***************************************************************************/
+189        
+190        ods html
+191        file="&OUTPUT_PATH./09_Executive_Risk_Dashboard_Results_SAS.html"
+SYMBOLGEN:  Macro variable OUTPUT_PATH resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT
+192        style=statistical;
+NOTE: Writing HTML Body file: 
+      /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/09_Executive_Risk_Dashboard_Results_SAS.html
+193        
+194        title "Executive Risk Dashboard";
+195        
+196        proc print data=BANK.EXECUTIVE_DASHBOARD_SUMMARY;
+197        run;
+
+NOTE: There were 1 observations read from the data set BANK.EXECUTIVE_DASHBOARD_SUMMARY.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              2224.07k
+      OS Memory           27300.00k
+      Timestamp           11/10/2026 03:53:22 AM
+      Step Count                        30  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     560
+      Page Swaps                        0
+      Voluntary Context Switches        14
+      Involuntary Context Switches      1
+      Block Input Operations            200
+      Block Output Operations           80
+      
+
+198        
+199        proc print data=PD_DASHBOARD;
+200        run;
+
+NOTE: There were 3 observations read from the data set WORK.PD_DASHBOARD.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              541.15k
+      OS Memory           27300.00k
+      Timestamp           11/10/2026 03:53:22 AM
+      Step Count                        31  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     96
+                                                           The SAS System
+
+      Page Swaps                        0
+      Voluntary Context Switches        0
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+201        
+202        proc print data=LGD_DASHBOARD;
+203        run;
+
+NOTE: There were 3 observations read from the data set WORK.LGD_DASHBOARD.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              488.93k
+      OS Memory           27300.00k
+      Timestamp           11/10/2026 03:53:22 AM
+      Step Count                        32  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     71
+      Page Swaps                        0
+      Voluntary Context Switches        0
+      Involuntary Context Switches      1
+      Block Input Operations            0
+      Block Output Operations           8
+      
+
+204        
+205        proc print data=ECL_DASHBOARD;
+206        run;
+
+NOTE: There were 4 observations read from the data set WORK.ECL_DASHBOARD.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              465.21k
+      OS Memory           27300.00k
+      Timestamp           11/10/2026 03:53:22 AM
+      Step Count                        33  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     73
+      Page Swaps                        0
+      Voluntary Context Switches        0
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+207        
+208        proc print data=STRESS_DASHBOARD;
+209        run;
+
+NOTE: There were 3 observations read from the data set WORK.STRESS_DASHBOARD.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+                                                           The SAS System
+
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              491.18k
+      OS Memory           27300.00k
+      Timestamp           11/10/2026 03:53:22 AM
+      Step Count                        34  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     66
+      Page Swaps                        0
+      Voluntary Context Switches        0
+      Involuntary Context Switches      1
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+210        
+211        ods html close;
+212        
+213        /***************************************************************************/
+214        /* PDF REPORT                                                              */
+215        /***************************************************************************/
+216        
+217        ods pdf
+218        file="&OUTPUT_PATH./09_Executive_Risk_Dashboard_Results_SAS.pdf";
+SYMBOLGEN:  Macro variable OUTPUT_PATH resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT
+NOTE: Writing ODS PDF output to DISK destination 
+      "/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/09_Executive_Risk_Dashboard_Results_SAS.pdf", 
+      printer "PDF".
+219        
+220        title "Executive Banking Credit Risk Dashboard";
+221        
+222        proc print data=BANK.EXECUTIVE_DASHBOARD_SUMMARY;
+223        run;
+
+NOTE: There were 1 observations read from the data set BANK.EXECUTIVE_DASHBOARD_SUMMARY.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.02 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              1317.06k
+      OS Memory           26024.00k
+      Timestamp           11/10/2026 03:53:22 AM
+      Step Count                        35  Switch Count  0
+      Page Faults                       2
+      Page Reclaims                     199
+      Page Swaps                        0
+      Voluntary Context Switches        19
+      Involuntary Context Switches      8
+      Block Input Operations            3656
+      Block Output Operations           32
+      
+
+224        
+225        proc print data=PD_DASHBOARD;
+226        run;
+
+NOTE: There were 3 observations read from the data set WORK.PD_DASHBOARD.
+NOTE: PROCEDURE PRINT used (Total process time):
+                                                           The SAS System
+
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              491.31k
+      OS Memory           26024.00k
+      Timestamp           11/10/2026 03:53:22 AM
+      Step Count                        36  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     80
+      Page Swaps                        0
+      Voluntary Context Switches        0
+      Involuntary Context Switches      2
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+227        
+228        proc print data=LGD_DASHBOARD;
+229        run;
+
+NOTE: There were 3 observations read from the data set WORK.LGD_DASHBOARD.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              455.65k
+      OS Memory           26024.00k
+      Timestamp           11/10/2026 03:53:22 AM
+      Step Count                        37  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     65
+      Page Swaps                        0
+      Voluntary Context Switches        0
+      Involuntary Context Switches      1
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+230        
+231        proc print data=ECL_DASHBOARD;
+232        run;
+
+NOTE: There were 4 observations read from the data set WORK.ECL_DASHBOARD.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              479.09k
+      OS Memory           26024.00k
+      Timestamp           11/10/2026 03:53:22 AM
+      Step Count                        38  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     69
+      Page Swaps                        0
+      Voluntary Context Switches        1
+      Involuntary Context Switches      0
+      Block Input Operations            104
+      Block Output Operations           8
+                                                           The SAS System
+
+      
+
+233        
+234        proc print data=STRESS_DASHBOARD;
+235        run;
+
+NOTE: There were 3 observations read from the data set WORK.STRESS_DASHBOARD.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              480.31k
+      OS Memory           26024.00k
+      Timestamp           11/10/2026 03:53:22 AM
+      Step Count                        39  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     66
+      Page Swaps                        0
+      Voluntary Context Switches        0
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+236        
+237        ods pdf close;
+NOTE: ODS PDF printed 5 pages to 
+      /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/09_Executive_Risk_Dashboard_Results_SAS.pdf.
+238        
+239        /***************************************************************************/
+240        /* EXECUTION AUDIT                                                         */
+241        /***************************************************************************/
+242        
+243        data BANK.EXECUTIVE_RISK_DASHBOARD;
+244        
+245        merge
+246        BANK.EXECUTIVE_DASHBOARD_SUMMARY;
+247        
+248        run;
+
+NOTE: There were 1 observations read from the data set BANK.EXECUTIVE_DASHBOARD_SUMMARY.
+NOTE: The data set BANK.EXECUTIVE_RISK_DASHBOARD has 1 observations and 6 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              808.31k
+      OS Memory           24744.00k
+      Timestamp           11/10/2026 03:53:22 AM
+      Step Count                        40  Switch Count  1
+      Page Faults                       0
+      Page Reclaims                     122
+      Page Swaps                        0
+      Voluntary Context Switches        32
+      Involuntary Context Switches      1
+      Block Input Operations            0
+      Block Output Operations           264
+      
+                                                           The SAS System
+
+
+249        
+250        /***************************************************************************/
+251        /* RESET LOGGING                                                           */
+252        /***************************************************************************/
+253        
+254        proc printto;
+255        run;
+

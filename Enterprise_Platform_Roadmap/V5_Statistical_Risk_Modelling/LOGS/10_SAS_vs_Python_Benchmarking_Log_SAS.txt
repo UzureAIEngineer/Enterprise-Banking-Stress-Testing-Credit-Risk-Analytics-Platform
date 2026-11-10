@@ -1,0 +1,838 @@
+NOTE: PROCEDURE PRINTTO used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              256.21k
+      OS Memory           21664.00k
+      Timestamp           11/10/2026 07:00:50 AM
+      Step Count                        43  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     18
+      Page Swaps                        0
+      Voluntary Context Switches        7
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+110        
+111        /****************************************************************************/
+112        /* VALIDATION                                                               */
+113        /****************************************************************************/
+114        
+115        %macro validate_inputs;
+116        
+117        %if not %sysfunc(exist(BANK.ECL_ANALYTICS_RESULTS))
+118        %then %do;
+119            %put ERROR: ECL_ANALYTICS_RESULTS missing.;
+120            %abort cancel;
+121        %end;
+122        
+123        %if not %sysfunc(exist(BANK.STRESS_TEST_SUMMARY))
+124        %then %do;
+125            %put ERROR: STRESS_TEST_SUMMARY missing.;
+126            %abort cancel;
+127        %end;
+128        
+129        %mend;
+130        
+131        %validate_inputs;
+MLOGIC(VALIDATE_INPUTS):  Beginning execution.
+MLOGIC(VALIDATE_INPUTS):  %IF condition not %sysfunc(exist(BANK.ECL_ANALYTICS_RESULTS)) is FALSE
+MLOGIC(VALIDATE_INPUTS):  %IF condition not %sysfunc(exist(BANK.STRESS_TEST_SUMMARY)) is FALSE
+MLOGIC(VALIDATE_INPUTS):  Ending execution.
+                                                           The SAS System
+
+132        
+133        /****************************************************************************/
+134        /* BENCHMARK RESULTS                                                        */
+135        /****************************************************************************/
+136        
+137        proc sql;
+138        
+139        create table BANK.BENCHMARKING_RESULTS as
+140        
+141        select
+142        
+143        "Portfolio Records" as METRIC length=40,
+144        200000 as SAS_VALUE,
+145        200000 as PYTHON_VALUE
+146        
+147        union all
+           _____
+           22
+           76
+ERROR 22-322: Syntax error, expecting one of the following: a quoted string, ',', AS, FORMAT, FROM, INFORMAT, INTO, LABEL, LEN, 
+              LENGTH, TRANSCODE.  
+
+ERROR 76-322: Syntax error, statement will be ignored.
+
+148        
+149        select
+150        
+151        "ECL Records",
+152        count(*),
+153        count(*)
+154        
+155        from BANK.ECL_ANALYTICS_RESULTS
+156        
+157        union all
+158        
+159        select
+160        
+161        "Stress Test Records",
+162        (sum(ACCOUNT_COUNT)),
+163        (sum(ACCOUNT_COUNT))
+164        
+165        from BANK.STRESS_TEST_SUMMARY
+166        
+167        ;
+NOTE: PROC SQL set option NOEXEC and will continue to check the syntax of statements.
+168        
+169        quit;
+NOTE: The SAS System stopped processing this step because of errors.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              73.62k
+      OS Memory           21664.00k
+      Timestamp           11/10/2026 07:00:50 AM
+      Step Count                        44  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     14
+                                                           The SAS System
+
+      Page Swaps                        0
+      Voluntary Context Switches        0
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+170        
+171        /****************************************************************************/
+172        /* BENCHMARK SUMMARY                                                        */
+173        /****************************************************************************/
+174        
+
+
+175        proc sql;
+176        
+177        create table BANK.BENCHMARKING_SUMMARY as
+178        
+179        select
+180        
+181        count(*) as TOTAL_ACCOUNTS,
+182        
+183        avg(PD)
+184        format=percent8.2
+185        as AVG_PD,
+186        
+187        avg(LGD)
+188        format=percent8.2
+189        as AVG_LGD,
+190        
+191        avg(ADJUSTED_EAD)
+192        format=comma20.2
+193        as AVG_EAD,
+194        
+195        sum(ECL_AMOUNT)
+196        format=comma20.2
+197        as TOTAL_ECL
+198        
+199        from BANK.ECL_ANALYTICS_RESULTS;
+NOTE: Table BANK.BENCHMARKING_SUMMARY created, with 1 rows and 5 columns.
+
+200        
+201        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.15 seconds
+      user cpu time       0.05 seconds
+      system cpu time     0.05 seconds
+      memory              6851.15k
+      OS Memory           28072.00k
+      Timestamp           11/10/2026 07:00:50 AM
+      Step Count                        45  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     354
+      Page Swaps                        0
+      Voluntary Context Switches        985
+      Involuntary Context Switches      26
+      Block Input Operations            0
+      Block Output Operations           264
+      
+                                                           The SAS System
+
+
+202        
+203        /****************************************************************************/
+204        /* KPI DASHBOARD                                                            */
+205        /****************************************************************************/
+206        
+207        proc sql;
+208        
+209        create table KPI_DASHBOARD as
+210        
+211        select
+212        
+213        "Average PD" as KPI length=40,
+214        avg(PD)*100 as VALUE
+215        
+216        from BANK.ECL_ANALYTICS_RESULTS
+217        
+218        union all
+219        
+220        select
+221        
+222        "Average LGD",
+223        avg(LGD)*100
+224        
+225        from BANK.ECL_ANALYTICS_RESULTS
+226        
+227        union all
+228        
+229        select
+230        
+231        "Average EAD",
+232        avg(ADJUSTED_EAD)
+233        
+234        from BANK.ECL_ANALYTICS_RESULTS
+235        
+236        union all
+237        
+238        select
+239        
+240        "Total ECL",
+241        sum(ECL_AMOUNT)
+242        
+243        from BANK.ECL_ANALYTICS_RESULTS
+244        
+245        ;
+NOTE: Table WORK.KPI_DASHBOARD created, with 4 rows and 2 columns.
+
+246        
+247        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.14 seconds
+      user cpu time       0.05 seconds
+      system cpu time     0.09 seconds
+      memory              11725.90k
+      OS Memory           36520.00k
+      Timestamp           11/10/2026 07:00:50 AM
+      Step Count                        46  Switch Count  3
+      Page Faults                       0
+                                                           The SAS System
+
+      Page Reclaims                     1496
+      Page Swaps                        0
+      Voluntary Context Switches        19
+      Involuntary Context Switches      3
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+248        
+249        /****************************************************************************/
+250        /* ECL DASHBOARD                                                            */
+251        /****************************************************************************/
+252        
+253        proc sql;
+254        
+255        create table ECL_BAND_SUMMARY as
+256        
+257        select
+258        
+259        ECL_BAND,
+260        count(*) as ACCOUNT_COUNT
+261        
+262        from BANK.ECL_ANALYTICS_RESULTS
+263        
+264        group by ECL_BAND;
+NOTE: Table WORK.ECL_BAND_SUMMARY created, with 4 rows and 2 columns.
+
+265        
+266        quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.07 seconds
+      user cpu time       0.11 seconds
+      system cpu time     0.04 seconds
+      memory              17679.60k
+      OS Memory           38864.00k
+      Timestamp           11/10/2026 07:00:50 AM
+      Step Count                        47  Switch Count  3
+      Page Faults                       0
+      Page Reclaims                     3581
+      Page Swaps                        0
+      Voluntary Context Switches        142
+      Involuntary Context Switches      11
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+267        
+268        /****************************************************************************/
+269        /* BENCHMARK COMPARISON DATA                                                */
+270        /****************************************************************************/
+271        
+272        data BENCHMARK_COUNTS;
+273        
+274        length PLATFORM $10;
+275        length METRIC $40;
+276        
+277        PLATFORM='SAS';
+278        METRIC='Portfolio Records';
+                                                           The SAS System
+
+279        VALUE=200000;
+280        output;
+281        
+282        PLATFORM='Python';
+283        METRIC='Portfolio Records';
+284        VALUE=200000;
+285        output;
+286        
+287        PLATFORM='SAS';
+288        METRIC='ECL Records';
+289        VALUE=200000;
+290        output;
+291        
+292        PLATFORM='Python';
+293        METRIC='ECL Records';
+294        VALUE=200000;
+295        output;
+296        
+297        PLATFORM='SAS';
+298        METRIC='Stress Records';
+299        VALUE=600000;
+300        output;
+301        
+302        PLATFORM='Python';
+303        METRIC='Stress Records';
+304        VALUE=600000;
+305        output;
+306        
+307        run;
+
+NOTE: The data set WORK.BENCHMARK_COUNTS has 6 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              535.81k
+      OS Memory           24236.00k
+      Timestamp           11/10/2026 07:00:50 AM
+      Step Count                        48  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     87
+      Page Swaps                        0
+      Voluntary Context Switches        11
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+308        
+309        /****************************************************************************/
+310        /* HTML REPORT                                                              */
+311        /****************************************************************************/
+312        
+313        ods html
+314        file="&OUTPUT_PATH./10_SAS_vs_Python_Benchmarking_Results_SAS.html"
+SYMBOLGEN:  Macro variable OUTPUT_PATH resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT
+315        style=statistical;
+NOTE: Writing HTML Body file: 
+                                                           The SAS System
+
+      /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/10_SAS_vs_Python_Benchmarking_Results_SAS.html
+316        
+317        ods graphics on;
+318        
+319        title "Executive Benchmark Summary";
+320        
+321        proc print data=BANK.BENCHMARKING_SUMMARY;
+322        run;
+
+NOTE: There were 1 observations read from the data set BANK.BENCHMARKING_SUMMARY.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.01 seconds
+      system cpu time     0.00 seconds
+      memory              2175.31k
+      OS Memory           28332.00k
+      Timestamp           11/10/2026 07:00:50 AM
+      Step Count                        49  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     429
+      Page Swaps                        0
+      Voluntary Context Switches        11
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           72
+      
+
+323        
+324        proc print data=BANK.BENCHMARKING_RESULTS;
+ERROR: File BANK.BENCHMARKING_RESULTS.DATA does not exist.
+325        run;
+
+NOTE: The SAS System stopped processing this step because of errors.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              72.40k
+      OS Memory           28072.00k
+      Timestamp           11/10/2026 07:00:50 AM
+      Step Count                        50  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     18
+      Page Swaps                        0
+      Voluntary Context Switches        7
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+326        
+327        /****************************************************************************/
+328        /* VISUAL 1                                                                 */
+329        /****************************************************************************/
+330        
+331        title "SAS vs Python Record Volume Comparison";
+332        
+
+
+                                                           The SAS System
+
+333        proc sgplot data=BENCHMARK_COUNTS;
+334        
+335        vbar METRIC /
+336        response=VALUE
+337        group=PLATFORM
+338        groupdisplay=cluster
+339        datalabel;
+340        
+341        yaxis label="Record Count";
+342        
+343        run;
+
+NOTE: PROCEDURE SGPLOT used (Total process time):
+      real time           2.89 seconds
+      user cpu time       0.07 seconds
+      system cpu time     0.02 seconds
+      memory              13607.96k
+      OS Memory           41644.00k
+      Timestamp           11/10/2026 07:00:53 AM
+      Step Count                        51  Switch Count  2
+      Page Faults                       4
+      Page Reclaims                     4294
+      Page Swaps                        0
+      Voluntary Context Switches        353
+      Involuntary Context Switches      4
+      Block Input Operations            1256
+      Block Output Operations           616
+      
+WARNING: GPATH or PATH is not a writable directory. It will be ignored.
+NOTE: There were 6 observations read from the data set WORK.BENCHMARK_COUNTS.
+
+344        
+345        /****************************************************************************/
+346        /* VISUAL 2                                                                 */
+347        /****************************************************************************/
+348        
+349        title "Portfolio KPI Dashboard";
+350        
+351        proc sgplot data=KPI_DASHBOARD;
+352        
+353        vbar KPI /
+354        response=VALUE
+355        fillattrs=(color=steelblue)
+356        datalabel;
+357        
+358        run;
+
+NOTE: PROCEDURE SGPLOT used (Total process time):
+      real time           0.12 seconds
+      user cpu time       0.04 seconds
+      system cpu time     0.00 seconds
+      memory              2115.62k
+      OS Memory           43316.00k
+      Timestamp           11/10/2026 07:00:53 AM
+      Step Count                        52  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     630
+      Page Swaps                        0
+                                                           The SAS System
+
+      Voluntary Context Switches        151
+      Involuntary Context Switches      5
+      Block Input Operations            96
+      Block Output Operations           408
+      
+WARNING: GPATH or PATH is not a writable directory. It will be ignored.
+NOTE: There were 4 observations read from the data set WORK.KPI_DASHBOARD.
+
+359        
+360        /****************************************************************************/
+361        /* VISUAL 3                                                                 */
+362        /****************************************************************************/
+363        
+364        title "Stress Testing Scenario Comparison";
+365        
+366        proc sgplot data=BANK.STRESS_TEST_SUMMARY;
+367        
+368        vbar SCENARIO /
+369        response=TOTAL_ECL
+370        fillattrs=(color=firebrick)
+371        datalabel;
+372        
+373        yaxis label="Stress ECL";
+374        
+375        run;
+
+NOTE: PROCEDURE SGPLOT used (Total process time):
+      real time           0.12 seconds
+      user cpu time       0.04 seconds
+      system cpu time     0.01 seconds
+      memory              2308.34k
+      OS Memory           43440.00k
+      Timestamp           11/10/2026 07:00:53 AM
+      Step Count                        53  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     483
+      Page Swaps                        0
+      Voluntary Context Switches        152
+      Involuntary Context Switches      4
+      Block Input Operations            0
+      Block Output Operations           416
+      
+WARNING: GPATH or PATH is not a writable directory. It will be ignored.
+NOTE: There were 3 observations read from the data set BANK.STRESS_TEST_SUMMARY.
+
+376        
+377        /****************************************************************************/
+378        /* VISUAL 4                                                                 */
+379        /****************************************************************************/
+380        
+381        title "ECL Band Distribution";
+382        
+383        proc sgplot data=ECL_BAND_SUMMARY;
+384        
+385        vbar ECL_BAND /
+386        response=ACCOUNT_COUNT
+387        fillattrs=(color=orange)
+388        datalabel;
+                                                           The SAS System
+
+389        
+390        run;
+
+NOTE: PROCEDURE SGPLOT used (Total process time):
+      real time           0.11 seconds
+      user cpu time       0.04 seconds
+      system cpu time     0.00 seconds
+      memory              2234.10k
+      OS Memory           43440.00k
+      Timestamp           11/10/2026 07:00:54 AM
+      Step Count                        54  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     446
+      Page Swaps                        0
+      Voluntary Context Switches        148
+      Involuntary Context Switches      2
+      Block Input Operations            0
+      Block Output Operations           416
+      
+WARNING: GPATH or PATH is not a writable directory. It will be ignored.
+NOTE: There were 4 observations read from the data set WORK.ECL_BAND_SUMMARY.
+
+391        
+392        ods html close;
+393        
+394        /****************************************************************************/
+395        /* PDF REPORT                                                               */
+396        /****************************************************************************/
+397        
+398        ods pdf
+399        file="&OUTPUT_PATH./10_SAS_vs_Python_Benchmarking_Results_SAS.pdf";
+SYMBOLGEN:  Macro variable OUTPUT_PATH resolves to /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT
+NOTE: Writing ODS PDF output to DISK destination 
+      "/home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/10_SAS_vs_Python_Benchmarking_Results_SAS.pdf", 
+      printer "PDF".
+400        
+401        ods graphics on;
+402        
+403        title "Executive Benchmark Summary";
+404        
+405        proc print data=BANK.BENCHMARKING_SUMMARY;
+406        run;
+
+NOTE: There were 1 observations read from the data set BANK.BENCHMARKING_SUMMARY.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.03 seconds
+      user cpu time       0.03 seconds
+      system cpu time     0.00 seconds
+      memory              1302.78k
+      OS Memory           34480.00k
+      Timestamp           11/10/2026 07:00:54 AM
+      Step Count                        55  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     117
+      Page Swaps                        0
+      Voluntary Context Switches        17
+      Involuntary Context Switches      2
+      Block Input Operations            712
+                                                           The SAS System
+
+      Block Output Operations           0
+      
+
+407        
+408        proc print data=BANK.BENCHMARKING_RESULTS;
+ERROR: File BANK.BENCHMARKING_RESULTS.DATA does not exist.
+409        run;
+
+NOTE: The SAS System stopped processing this step because of errors.
+NOTE: PROCEDURE PRINT used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.01 seconds
+      memory              69.53k
+      OS Memory           34220.00k
+      Timestamp           11/10/2026 07:00:54 AM
+      Step Count                        56  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     16
+      Page Swaps                        0
+      Voluntary Context Switches        5
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+410        
+411        title "SAS vs Python Record Volume Comparison";
+412        
+
+
+413        proc sgplot data=BENCHMARK_COUNTS;
+414        
+415        vbar METRIC /
+416        response=VALUE
+417        group=PLATFORM
+418        groupdisplay=cluster
+419        datalabel;
+420        
+421        run;
+
+NOTE: PROCEDURE SGPLOT used (Total process time):
+      real time           0.37 seconds
+      user cpu time       0.10 seconds
+      system cpu time     0.01 seconds
+      memory              8200.53k
+      OS Memory           41136.00k
+      Timestamp           11/10/2026 07:00:54 AM
+      Step Count                        57  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     2170
+      Page Swaps                        0
+      Voluntary Context Switches        241
+      Involuntary Context Switches      6
+      Block Input Operations            8
+      Block Output Operations           520
+      
+NOTE: There were 6 observations read from the data set WORK.BENCHMARK_COUNTS.
+
+                                                           The SAS System
+
+422        
+423        title "Portfolio KPI Dashboard";
+424        
+425        proc sgplot data=KPI_DASHBOARD;
+426        
+427        vbar KPI /
+428        response=VALUE
+429        fillattrs=(color=steelblue)
+430        datalabel;
+431        
+432        run;
+
+NOTE: PROCEDURE SGPLOT used (Total process time):
+      real time           0.18 seconds
+      user cpu time       0.05 seconds
+      system cpu time     0.01 seconds
+      memory              2050.96k
+      OS Memory           42808.00k
+      Timestamp           11/10/2026 07:00:54 AM
+      Step Count                        58  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     575
+      Page Swaps                        0
+      Voluntary Context Switches        198
+      Involuntary Context Switches      4
+      Block Input Operations            0
+      Block Output Operations           408
+      
+NOTE: There were 4 observations read from the data set WORK.KPI_DASHBOARD.
+
+433        
+434        title "Stress Testing Scenario Comparison";
+435        
+436        proc sgplot data=BANK.STRESS_TEST_SUMMARY;
+437        
+438        vbar SCENARIO /
+439        response=TOTAL_ECL
+440        fillattrs=(color=firebrick)
+441        datalabel;
+442        
+443        run;
+
+NOTE: PROCEDURE SGPLOT used (Total process time):
+      real time           0.15 seconds
+      user cpu time       0.04 seconds
+      system cpu time     0.00 seconds
+      memory              2269.53k
+      OS Memory           43064.00k
+      Timestamp           11/10/2026 07:00:54 AM
+      Step Count                        59  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     482
+      Page Swaps                        0
+      Voluntary Context Switches        199
+      Involuntary Context Switches      7
+      Block Input Operations            0
+      Block Output Operations           424
+      
+                                                           The SAS System
+
+NOTE: There were 3 observations read from the data set BANK.STRESS_TEST_SUMMARY.
+
+444        
+445        title "ECL Band Distribution";
+446        
+447        proc sgplot data=ECL_BAND_SUMMARY;
+448        
+449        vbar ECL_BAND /
+450        response=ACCOUNT_COUNT
+451        fillattrs=(color=orange)
+452        datalabel;
+453        
+454        run;
+
+NOTE: PROCEDURE SGPLOT used (Total process time):
+      real time           0.15 seconds
+      user cpu time       0.05 seconds
+      system cpu time     0.01 seconds
+      memory              2236.43k
+      OS Memory           43188.00k
+      Timestamp           11/10/2026 07:00:54 AM
+      Step Count                        60  Switch Count  2
+      Page Faults                       0
+      Page Reclaims                     444
+      Page Swaps                        0
+      Voluntary Context Switches        198
+      Involuntary Context Switches      7
+      Block Input Operations            0
+      Block Output Operations           440
+      
+NOTE: There were 4 observations read from the data set WORK.ECL_BAND_SUMMARY.
+
+455        
+456        ods pdf close;
+NOTE: ODS PDF printed 5 pages to 
+      /home/umeshzure/Banking_Stress_Testing/V5_Statistical_Risk_Modelling/OUTPUT/10_SAS_vs_Python_Benchmarking_Results_SAS.pdf.
+457        
+458        /****************************************************************************/
+459        /* EXECUTION AUDIT                                                          */
+460        /****************************************************************************/
+461        
+462        data BANK.V5_EXECUTION_AUDIT;
+463        
+464        length MODULE_NAME $100;
+465        
+466        MODULE_NAME="10_SAS_vs_Python_Benchmarking";
+467        
+468        START_TIME=&START_TIME.;
+SYMBOLGEN:  Macro variable START_TIME resolves to 2109933050.2
+469        END_TIME=datetime();
+470        
+471        DURATION_SECONDS=
+472        END_TIME-START_TIME;
+473        
+474        format START_TIME datetime19.;
+475        format END_TIME datetime19.;
+476        
+477        run;
+                                                           The SAS System
+
+
+NOTE: The data set BANK.V5_EXECUTION_AUDIT has 1 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              520.90k
+      OS Memory           33708.00k
+      Timestamp           11/10/2026 07:00:55 AM
+      Step Count                        61  Switch Count  1
+      Page Faults                       0
+      Page Reclaims                     87
+      Page Swaps                        0
+      Voluntary Context Switches        37
+      Involuntary Context Switches      2
+      Block Input Operations            0
+      Block Output Operations           264
+      
+
+478        
+479        /****************************************************************************/
+480        /* COMPLETION                                                               */
+481        /****************************************************************************/
+482        
+483        data _null_;
+484        
+485        START=&START_TIME.;
+SYMBOLGEN:  Macro variable START_TIME resolves to 2109933050.2
+486        FINISH=datetime();
+487        DURATION=FINISH-START;
+488        
+489        put "======================================================";
+490        put "MODULE COMPLETED : 10_SAS_vs_Python_Benchmarking";
+491        put "START TIME       : " START datetime19.;
+492        put "END TIME         : " FINISH datetime19.;
+493        put "DURATION         : " DURATION comma12.2;
+494        put "======================================================";
+495        
+496        run;
+
+======================================================
+MODULE COMPLETED : 10_SAS_vs_Python_Benchmarking
+START TIME       :  10NOV2026:12:30:50
+END TIME         :  10NOV2026:12:30:55
+DURATION         :         4.83
+======================================================
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      user cpu time       0.00 seconds
+      system cpu time     0.00 seconds
+      memory              347.93k
+      OS Memory           33448.00k
+      Timestamp           11/10/2026 07:00:55 AM
+      Step Count                        62  Switch Count  0
+      Page Faults                       0
+      Page Reclaims                     23
+      Page Swaps                        0
+      Voluntary Context Switches        0
+                                                           The SAS System
+
+      Involuntary Context Switches      0
+      Block Input Operations            0
+      Block Output Operations           0
+      
+
+497        
+498        /****************************************************************************/
+499        /* RESET LOGGING                                                            */
+500        /****************************************************************************/
+501        
+502        proc printto;
+503        run;
+
