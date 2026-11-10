@@ -534,3 +534,12 @@ Planned capabilities:
 ✅ Benchmarking Complete
 
 ✅ Portfolio Scale: 200,000 Accounts
+
+
+## Future Architecture
+
+Detailed future-state architecture documents:
+
+- DATA/DATA_V2_STRUCTURE.md
+- LOGS/LOGS_V2_STRUCTURE.md
+- OUTPUT/OUTPUT_V2_STRUCTURE.md
